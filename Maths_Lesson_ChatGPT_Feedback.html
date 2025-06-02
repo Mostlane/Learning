@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Maths Worksheet – FDP Conversion</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .section {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .feedback {
+      margin-top: 20px;
+      background: #eaf2f8;
+      padding: 15px;
+      border-left: 4px solid #3498db;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>📘 Maths Lesson: Fractions, Decimals & Percentages</h1>
+
+  <div class="section">
+    <p><strong>Topic:</strong> Converting between fractions, decimals, and percentages</p>
+    <p>Watch this video before attempting the questions:</p>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/SzjVKPtn7bk" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <div class="section">
+    <h2>📝 Questions</h2>
+    <form id="worksheetForm">
+      <input type="hidden" name="student" value="Isla Line">
+      <input type="hidden" name="subject" value="Maths">
+      <input type="hidden" name="topic" value="FDP Conversion">
+      <div id="questionsArea"></div>
+      <button type="submit">📤 Submit Answers</button>
+    </form>
+  </div>
+
+  <div id="feedbackBlock" class="feedback">
+    <h3>🔍 Feedback from your teacher:</h3>
+    <div id="feedbackText">Please wait...</div>
+  </div>
+
+  <script>
+    const questions = [
+      "Convert 1/2 to a decimal",
+      "Convert 0.75 to a percentage",
+      "Convert 20% to a fraction",
+      "Convert 0.2 to a percentage",
+      "Convert 3/4 to a decimal"
+    ];
+
+    const form = document.getElementById("worksheetForm");
+    const questionsArea = document.getElementById("questionsArea");
+
+    // Generate inputs
+    questions.forEach((q, i) => {
+      const id = "q" + i;
+      questionsArea.innerHTML += `
+        <label for="${id}">Q${i + 1}: ${q}</label><br>
+        <input type="text" id="${id}" name="${id}" required><br><br>
+      `;
+    });
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = {
+        student: "Isla Line",
+        subject: "Maths",
+        topic: "FDP Conversion",
+        answers: []
+      };
+
+      questions.forEach((q, i) => {
+        const input = document.getElementById("q" + i).value.trim();
+        data.answers.push({ question: q, answer: input });
+      });
+
+      document.getElementById("feedbackBlock").style.display = "block";
+      document.getElementById("feedbackText").innerHTML = "Submitting for marking...";
+
+      fetch("https://hooks.zapier.com/hooks/catch/20261714/2vs28k1/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(res => {
+        document.getElementById("feedbackText").innerHTML = res.feedback || "No feedback returned.";
+      })
+      .catch(err => {
+        document.getElementById("feedbackText").innerHTML = "There was an error submitting the worksheet.";
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>
