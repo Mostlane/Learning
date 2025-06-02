@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Maths Lesson – Fractions, Decimals & Percentages</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f9fcff;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    h2 {
+      color: #2e86c1;
+      margin-top: 30px;
+    }
+    p {
+      font-size: 16px;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      font-size: 15px;
+      margin: 10px 0;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    iframe {
+      display: block;
+      margin: 0 auto 20px auto;
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>➗ Maths</h1>
+  <h2>📊 Topic: Fractions, Decimals & Percentages</h2>
+
+  <p><strong>Lesson Overview:</strong><br>
+  In this lesson, we’ll explore how to convert between fractions, decimals and percentages. We’ll learn strategies to simplify fractions, calculate percentage values and understand how these three formats relate to each other.</p>
+
+  <h2>🎥 Watch the Video</h2>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/SzjVKPtn7bk" title="Converting Fractions, Decimals & Percentages - KS3 Maths" frameborder="0" allowfullscreen></iframe>
+
+  <h2>📝 Answer the Questions</h2>
+<p>1. What does 'percent' mean?</p><input type='text' />
+<p>2. Convert 1/2 to a decimal.</p><input type='text' />
+<p>3. Convert 1/2 to a percentage.</p><input type='text' />
+<p>4. Convert 0.75 to a fraction.</p><input type='text' />
+<p>5. Convert 0.75 to a percentage.</p><input type='text' />
+<p>6. Convert 25% to a decimal.</p><input type='text' />
+<p>7. Convert 25% to a fraction.</p><input type='text' />
+<p>8. Convert 3/4 to a percentage.</p><input type='text' />
+<p>9. Convert 0.2 to a percentage.</p><input type='text' />
+<p>10. Convert 80% to a decimal.</p><input type='text' />
+<p>11. What is 20% of 50?</p><input type='text' />
+<p>12. What is 10% of 120?</p><input type='text' />
+<p>13. What is 50% of 300?</p><input type='text' />
+<p>14. Write 0.6 as a fraction.</p><input type='text' />
+<p>15. Write 0.6 as a percentage.</p><input type='text' />
+<p>16. Convert 7/10 to a percentage.</p><input type='text' />
+<p>17. Simplify 50/100.</p><input type='text' />
+<p>18. Is 0.25 equivalent to 1/4?</p><input type='text' />
+<p>19. What is 75% as a fraction?</p><input type='text' />
+<p>20. What is 0.1 as a percentage?</p><input type='text' />
+<p>21. What is 1/5 as a percentage?</p><input type='text' />
+<p>22. If 30% of a number is 60, what is the number?</p><input type='text' />
+<p>23. Find 15% of 80.</p><input type='text' />
+<p>24. Convert 2/5 to a decimal.</p><input type='text' />
+<p>25. Convert 2/5 to a percentage.</p><input type='text' />
+<p>26. What is 33.33% as a fraction?</p><input type='text' />
+<p>27. Write 1/8 as a decimal and a percentage.</p><input type='text' />
+<p>28. If a shirt costs £40 and is discounted by 25%, how much is the discount?</p><input type='text' />
+<p>29. How do you convert a decimal to a percentage?</p><input type='text' />
+<p>30. How do you convert a percentage to a fraction?</p><input type='text' />
+
+
+  <h2>📤 Submit Your Work</h2>
+  <button onclick="reviewAnswers()" style="padding: 10px 20px; font-size: 16px; background-color: #3498db; color: white; border: none; border-radius: 5px;">Submit Answers</button>
+
+  <div id="feedback" style="margin-top: 30px; padding: 15px; background: #eaf2f8; border-radius: 5px;"></div>
+
+  <script>
+    function reviewAnswers() {
+      const inputs = document.querySelectorAll('input[type="text"]');
+      let summary = "<h2>📘 Summary of Your Answers</h2>";
+      inputs.forEach((input, index) => {
+        const answer = input.value.trim();
+        if (answer) {
+          summary += "<p><strong>Q" + (index + 1) + ":</strong> " + answer + "</p>";
+        } else {
+          summary += "<p><strong>Q" + (index + 1) + ":</strong> <span style='color: red;'>No answer provided</span></p>";
+        }
+      });
+      document.getElementById("feedback").innerHTML = summary;
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
+
+</html>
