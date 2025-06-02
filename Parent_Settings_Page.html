@@ -1,0 +1,143 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Parent Settings – Learning Portal</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f8fc;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2d3e50;
+    }
+    .section {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    label, select, input, button {
+      display: block;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    input[type="checkbox"], input[type="range"] {
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+    }
+    .subject-weight {
+      margin-bottom: 15px;
+    }
+    .btn {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>👨‍👩‍👧 Parent Settings</h1>
+
+<div class="section">
+  <h2>👤 General Settings</h2>
+  <label>Student Name: <strong>Jamie</strong></label>
+  <label>Active School Days:</label>
+  <label><input type="checkbox" checked> Monday</label>
+  <label><input type="checkbox" checked> Tuesday</label>
+  <label><input type="checkbox" checked> Wednesday</label>
+  <label><input type="checkbox" checked> Thursday</label>
+  <label><input type="checkbox" checked> Friday</label>
+  <label>Study Hours Per Day:
+    <input type="range" min="1" max="8" value="6" />
+  </label>
+  <label>Learning Style:
+    <select>
+      <option>Visual</option>
+      <option>Practical</option>
+      <option>Reading</option>
+      <option>Mixed</option>
+    </select>
+  </label>
+</div>
+
+<div class="section">
+  <h2>📚 Curriculum Focus</h2>
+  <div class="subject-weight">
+    <label>English <input type="range" min="1" max="5" value="3" /></label>
+  </div>
+  <div class="subject-weight">
+    <label>Maths <input type="range" min="1" max="5" value="4" /></label>
+  </div>
+  <div class="subject-weight">
+    <label>Science <input type="range" min="1" max="5" value="3" /></label>
+  </div>
+  <div class="subject-weight">
+    <label>Geography <input type="range" min="1" max="5" value="2" /></label>
+  </div>
+  <div class="subject-weight">
+    <label>History <input type="range" min="1" max="5" value="2" /></label>
+  </div>
+  <div class="subject-weight">
+    <label>RE <input type="range" min="1" max="5" value="1" /></label>
+  </div>
+  <div class="subject-weight">
+    <label>Computing <input type="range" min="1" max="5" value="3" /></label>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🧠 Adaptive Learning</h2>
+  <label>Marking Strictness:
+    <select>
+      <option>Low</option>
+      <option selected>Medium</option>
+      <option>High</option>
+    </select>
+  </label>
+  <label>Feedback Style:
+    <select>
+      <option>Encouraging</option>
+      <option selected>Balanced</option>
+      <option>Honest</option>
+    </select>
+  </label>
+  <label><input type="checkbox" checked> Automatically focus on weaker areas</label>
+</div>
+
+<div class="section">
+  <h2>📥 Notifications</h2>
+  <label><input type="checkbox" checked> Email daily summary to parent</label>
+  <label><input type="checkbox"> Notify if student misses tasks</label>
+  <label><input type="checkbox" checked> Weekly progress report</label>
+</div>
+
+<div class="section">
+  <h2>🔐 Account Management</h2>
+  <label>Parent Email:
+    <input type="email" value="parent@email.com"/>
+  </label>
+  <button class="btn">Save Settings</button>
+</div>
+
+</body>
+</html>

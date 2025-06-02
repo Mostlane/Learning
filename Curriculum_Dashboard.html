@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>My Learning Dashboard – Year 8</title>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: #fff8f0;
+            padding: 30px;
+            color: #333;
+        }
+        h1 {
+            color: #ff6f61;
+            font-size: 36px;
+        }
+        p {
+            font-size: 18px;
+            color: #444;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 14px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #ffd700;
+            font-size: 20px;
+            color: #4b0082;
+        }
+        .slider {
+            width: 90%;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 90%;
+            margin: 0 auto;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #7ec850;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    
+        .filter-btn {
+            background-color: #ffda77;
+            border: none;
+            color: #4b0082;
+            padding: 12px 20px;
+            margin: 5px;
+            font-size: 16px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+        .filter-btn:hover {
+            background-color: #ffe599;
+            transform: scale(1.05);
+        }
+    </style>
+    <script>
+        function updateSlider(id) {
+            const slider = document.getElementById("slider-" + id);
+            const label = document.getElementById("weight-label-" + id);
+            label.innerText = slider.value;
+        }
+        function updateProgress(id, value) {
+            const bar = document.getElementById("progress-bar-" + id);
+            const text = document.getElementById("progress-text-" + id);
+            bar.style.width = value + "%";
+            text.innerText = value + "%";
+        }
+        window.onload = function() {
+            updateProgress('shakespeare', 0);updateProgress('19th-century-novel', 20);updateProgress('creative-writing', 40);updateProgress('poetry', 60);updateProgress('formal-speaking', 80);updateProgress('fractions--decimals', 0);updateProgress('algebra', 20);updateProgress('geometry', 40);updateProgress('statistics', 60);updateProgress('probability', 80);updateProgress('cells--microorganisms', 0);updateProgress('human-body-systems', 20);updateProgress('reproduction', 40);updateProgress('health--nutrition', 60);updateProgress('atoms--elements', 0);updateProgress('chemical-reactions', 20);updateProgress('periodic-table', 40);updateProgress('acids--alkalis', 60);updateProgress('forces', 0);updateProgress('energy', 20);updateProgress('electricity', 40);updateProgress('waves', 60);updateProgress('weather--climate', 0);updateProgress('rivers--coasts', 20);updateProgress('urbanisation', 40);updateProgress('sustainability', 60);updateProgress('tudor-england', 0);updateProgress('industrial-revolution', 20);updateProgress('world-wars', 40);updateProgress('civil-rights', 60);updateProgress('python-programming', 0);updateProgress('algorithms', 20);updateProgress('cybersecurity', 40);updateProgress('data-handling', 60);updateProgress('resistant-materials', 0);updateProgress('food-tech', 20);updateProgress('textiles', 40);updateProgress('cad--cam', 60);updateProgress('sketching', 0);updateProgress('painting', 20);updateProgress('sculpture', 40);updateProgress('artist-study', 60);updateProgress('notation', 0);updateProgress('composition', 20);updateProgress('world-music', 40);updateProgress('performing', 60);updateProgress('invasion-games', 0);updateProgress('fitness', 20);updateProgress('dance', 40);updateProgress('outdoor-education', 60);updateProgress('basic-conversation', 0);updateProgress('food--drink', 20);updateProgress('family', 40);updateProgress('holidays', 60);updateProgress('mental-health', 0);updateProgress('relationships', 20);updateProgress('drugs--alcohol', 40);updateProgress('online-safety', 60);updateProgress('world-religions', 0);updateProgress('philosophy', 20);updateProgress('ethics--morality', 40);updateProgress('festivals', 60);
+        }
+    </script>
+</head>
+
+<body>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <button onclick="window.location.href='parent-menu.html'" class="filter-btn">🏠 Main Menu</button>
+        <h1 style="text-align: center; flex-grow: 1; margin: 0;">🎉 My Year 8 Learning Adventure</h1>
+        <button onclick="generatePDF()" class="filter-btn">📝 Generate Report</button>
+    </div>
+    <div style="text-align:center; margin-bottom: 20px; font-size: 18px;">👤 Student Name: <strong>Jamie</strong></div>
+
+
+<div style="margin-bottom: 25px; text-align: center;">
+    <button onclick="filterTopics('all')" class="filter-btn">📚 All Topics</button>
+    <button onclick="filterTopics('focus')" class="filter-btn">📉 Areas That Need Focus</button>
+    <button onclick="filterTopics('priority')" class="filter-btn">🚀 High Priority</button>
+    <button onclick="filterTopics('complete')" class="filter-btn">✅ Nearly Complete</button>
+</div>
+
+    
+    <p>Move the sliders to choose how much of each subject to focus on. Watch your progress grow as you learn!</p>
+    <table>
+        <tr>
+            <th>🧠 Topic</th>
+            <th>🎯 Focus (1–5)</th>
+            <th>📈 Progress</th>
+        </tr>
+        
+        <tr style="background-color:#ffefd5; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">📖 English</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Shakespeare</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-shakespeare" oninput="updateSlider('shakespeare')">
+                <br><span id="weight-label-shakespeare" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-shakespeare"></div></div>
+                <span id="progress-text-shakespeare" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 19th Century Novel</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-19th-century-novel" oninput="updateSlider('19th-century-novel')">
+                <br><span id="weight-label-19th-century-novel" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-19th-century-novel"></div></div>
+                <span id="progress-text-19th-century-novel" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Creative Writing</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-creative-writing" oninput="updateSlider('creative-writing')">
+                <br><span id="weight-label-creative-writing" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-creative-writing"></div></div>
+                <span id="progress-text-creative-writing" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Poetry</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-poetry" oninput="updateSlider('poetry')">
+                <br><span id="weight-label-poetry" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-poetry"></div></div>
+                <span id="progress-text-poetry" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Formal Speaking</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-formal-speaking" oninput="updateSlider('formal-speaking')">
+                <br><span id="weight-label-formal-speaking" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-formal-speaking"></div></div>
+                <span id="progress-text-formal-speaking" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#e0ffff; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">➗ Maths</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Fractions & Decimals</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-fractions--decimals" oninput="updateSlider('fractions--decimals')">
+                <br><span id="weight-label-fractions--decimals" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-fractions--decimals"></div></div>
+                <span id="progress-text-fractions--decimals" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Algebra</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-algebra" oninput="updateSlider('algebra')">
+                <br><span id="weight-label-algebra" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-algebra"></div></div>
+                <span id="progress-text-algebra" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Geometry</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-geometry" oninput="updateSlider('geometry')">
+                <br><span id="weight-label-geometry" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-geometry"></div></div>
+                <span id="progress-text-geometry" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Statistics</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-statistics" oninput="updateSlider('statistics')">
+                <br><span id="weight-label-statistics" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-statistics"></div></div>
+                <span id="progress-text-statistics" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Probability</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-probability" oninput="updateSlider('probability')">
+                <br><span id="weight-label-probability" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-probability"></div></div>
+                <span id="progress-text-probability" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#f0fff0; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🧬 Science - Biology</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Cells & Microorganisms</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-cells--microorganisms" oninput="updateSlider('cells--microorganisms')">
+                <br><span id="weight-label-cells--microorganisms" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-cells--microorganisms"></div></div>
+                <span id="progress-text-cells--microorganisms" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Human Body Systems</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-human-body-systems" oninput="updateSlider('human-body-systems')">
+                <br><span id="weight-label-human-body-systems" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-human-body-systems"></div></div>
+                <span id="progress-text-human-body-systems" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Reproduction</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-reproduction" oninput="updateSlider('reproduction')">
+                <br><span id="weight-label-reproduction" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-reproduction"></div></div>
+                <span id="progress-text-reproduction" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Health & Nutrition</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-health--nutrition" oninput="updateSlider('health--nutrition')">
+                <br><span id="weight-label-health--nutrition" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-health--nutrition"></div></div>
+                <span id="progress-text-health--nutrition" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#f5f5dc; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">⚗️ Science - Chemistry</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Atoms & Elements</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-atoms--elements" oninput="updateSlider('atoms--elements')">
+                <br><span id="weight-label-atoms--elements" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-atoms--elements"></div></div>
+                <span id="progress-text-atoms--elements" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Chemical Reactions</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-chemical-reactions" oninput="updateSlider('chemical-reactions')">
+                <br><span id="weight-label-chemical-reactions" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-chemical-reactions"></div></div>
+                <span id="progress-text-chemical-reactions" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Periodic Table</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-periodic-table" oninput="updateSlider('periodic-table')">
+                <br><span id="weight-label-periodic-table" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-periodic-table"></div></div>
+                <span id="progress-text-periodic-table" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Acids & Alkalis</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-acids--alkalis" oninput="updateSlider('acids--alkalis')">
+                <br><span id="weight-label-acids--alkalis" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-acids--alkalis"></div></div>
+                <span id="progress-text-acids--alkalis" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#fffacd; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🔭 Science - Physics</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Forces</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-forces" oninput="updateSlider('forces')">
+                <br><span id="weight-label-forces" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-forces"></div></div>
+                <span id="progress-text-forces" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Energy</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-energy" oninput="updateSlider('energy')">
+                <br><span id="weight-label-energy" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-energy"></div></div>
+                <span id="progress-text-energy" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Electricity</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-electricity" oninput="updateSlider('electricity')">
+                <br><span id="weight-label-electricity" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-electricity"></div></div>
+                <span id="progress-text-electricity" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Waves</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-waves" oninput="updateSlider('waves')">
+                <br><span id="weight-label-waves" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-waves"></div></div>
+                <span id="progress-text-waves" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffefd5; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🗺️ Geography</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Weather & Climate</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-weather--climate" oninput="updateSlider('weather--climate')">
+                <br><span id="weight-label-weather--climate" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-weather--climate"></div></div>
+                <span id="progress-text-weather--climate" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Rivers & Coasts</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-rivers--coasts" oninput="updateSlider('rivers--coasts')">
+                <br><span id="weight-label-rivers--coasts" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-rivers--coasts"></div></div>
+                <span id="progress-text-rivers--coasts" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Urbanisation</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-urbanisation" oninput="updateSlider('urbanisation')">
+                <br><span id="weight-label-urbanisation" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-urbanisation"></div></div>
+                <span id="progress-text-urbanisation" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Sustainability</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-sustainability" oninput="updateSlider('sustainability')">
+                <br><span id="weight-label-sustainability" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-sustainability"></div></div>
+                <span id="progress-text-sustainability" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#e0ffff; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🏰 History</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Tudor England</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-tudor-england" oninput="updateSlider('tudor-england')">
+                <br><span id="weight-label-tudor-england" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-tudor-england"></div></div>
+                <span id="progress-text-tudor-england" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Industrial Revolution</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-industrial-revolution" oninput="updateSlider('industrial-revolution')">
+                <br><span id="weight-label-industrial-revolution" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-industrial-revolution"></div></div>
+                <span id="progress-text-industrial-revolution" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 World Wars</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-world-wars" oninput="updateSlider('world-wars')">
+                <br><span id="weight-label-world-wars" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-world-wars"></div></div>
+                <span id="progress-text-world-wars" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Civil Rights</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-civil-rights" oninput="updateSlider('civil-rights')">
+                <br><span id="weight-label-civil-rights" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-civil-rights"></div></div>
+                <span id="progress-text-civil-rights" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#f0fff0; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">💻 Computing</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Python Programming</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-python-programming" oninput="updateSlider('python-programming')">
+                <br><span id="weight-label-python-programming" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-python-programming"></div></div>
+                <span id="progress-text-python-programming" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Algorithms</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-algorithms" oninput="updateSlider('algorithms')">
+                <br><span id="weight-label-algorithms" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-algorithms"></div></div>
+                <span id="progress-text-algorithms" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Cybersecurity</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-cybersecurity" oninput="updateSlider('cybersecurity')">
+                <br><span id="weight-label-cybersecurity" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-cybersecurity"></div></div>
+                <span id="progress-text-cybersecurity" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Data Handling</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-data-handling" oninput="updateSlider('data-handling')">
+                <br><span id="weight-label-data-handling" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-data-handling"></div></div>
+                <span id="progress-text-data-handling" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#f5f5dc; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🛠️ Design & Technology</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Resistant Materials</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-resistant-materials" oninput="updateSlider('resistant-materials')">
+                <br><span id="weight-label-resistant-materials" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-resistant-materials"></div></div>
+                <span id="progress-text-resistant-materials" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Food Tech</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-food-tech" oninput="updateSlider('food-tech')">
+                <br><span id="weight-label-food-tech" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-food-tech"></div></div>
+                <span id="progress-text-food-tech" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Textiles</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-textiles" oninput="updateSlider('textiles')">
+                <br><span id="weight-label-textiles" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-textiles"></div></div>
+                <span id="progress-text-textiles" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 CAD & CAM</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-cad--cam" oninput="updateSlider('cad--cam')">
+                <br><span id="weight-label-cad--cam" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-cad--cam"></div></div>
+                <span id="progress-text-cad--cam" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#fffacd; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🎨 Art & Design</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Sketching</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-sketching" oninput="updateSlider('sketching')">
+                <br><span id="weight-label-sketching" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-sketching"></div></div>
+                <span id="progress-text-sketching" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Painting</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-painting" oninput="updateSlider('painting')">
+                <br><span id="weight-label-painting" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-painting"></div></div>
+                <span id="progress-text-painting" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Sculpture</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-sculpture" oninput="updateSlider('sculpture')">
+                <br><span id="weight-label-sculpture" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-sculpture"></div></div>
+                <span id="progress-text-sculpture" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Artist Study</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-artist-study" oninput="updateSlider('artist-study')">
+                <br><span id="weight-label-artist-study" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-artist-study"></div></div>
+                <span id="progress-text-artist-study" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffefd5; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🎵 Music</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Notation</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-notation" oninput="updateSlider('notation')">
+                <br><span id="weight-label-notation" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-notation"></div></div>
+                <span id="progress-text-notation" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Composition</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-composition" oninput="updateSlider('composition')">
+                <br><span id="weight-label-composition" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-composition"></div></div>
+                <span id="progress-text-composition" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 World Music</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-world-music" oninput="updateSlider('world-music')">
+                <br><span id="weight-label-world-music" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-world-music"></div></div>
+                <span id="progress-text-world-music" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Performing</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-performing" oninput="updateSlider('performing')">
+                <br><span id="weight-label-performing" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-performing"></div></div>
+                <span id="progress-text-performing" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#e0ffff; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🏃 Physical Education</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Invasion Games</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-invasion-games" oninput="updateSlider('invasion-games')">
+                <br><span id="weight-label-invasion-games" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-invasion-games"></div></div>
+                <span id="progress-text-invasion-games" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Fitness</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-fitness" oninput="updateSlider('fitness')">
+                <br><span id="weight-label-fitness" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-fitness"></div></div>
+                <span id="progress-text-fitness" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Dance</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-dance" oninput="updateSlider('dance')">
+                <br><span id="weight-label-dance" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-dance"></div></div>
+                <span id="progress-text-dance" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Outdoor Education</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-outdoor-education" oninput="updateSlider('outdoor-education')">
+                <br><span id="weight-label-outdoor-education" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-outdoor-education"></div></div>
+                <span id="progress-text-outdoor-education" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#f0fff0; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🗣️ Modern Foreign Language</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Basic Conversation</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-basic-conversation" oninput="updateSlider('basic-conversation')">
+                <br><span id="weight-label-basic-conversation" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-basic-conversation"></div></div>
+                <span id="progress-text-basic-conversation" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Food & Drink</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-food--drink" oninput="updateSlider('food--drink')">
+                <br><span id="weight-label-food--drink" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-food--drink"></div></div>
+                <span id="progress-text-food--drink" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Family</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-family" oninput="updateSlider('family')">
+                <br><span id="weight-label-family" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-family"></div></div>
+                <span id="progress-text-family" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Holidays</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-holidays" oninput="updateSlider('holidays')">
+                <br><span id="weight-label-holidays" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-holidays"></div></div>
+                <span id="progress-text-holidays" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#f5f5dc; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🧠 PSHE</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Mental Health</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-mental-health" oninput="updateSlider('mental-health')">
+                <br><span id="weight-label-mental-health" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-mental-health"></div></div>
+                <span id="progress-text-mental-health" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Relationships</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-relationships" oninput="updateSlider('relationships')">
+                <br><span id="weight-label-relationships" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-relationships"></div></div>
+                <span id="progress-text-relationships" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Drugs & Alcohol</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-drugs--alcohol" oninput="updateSlider('drugs--alcohol')">
+                <br><span id="weight-label-drugs--alcohol" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-drugs--alcohol"></div></div>
+                <span id="progress-text-drugs--alcohol" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Online Safety</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-online-safety" oninput="updateSlider('online-safety')">
+                <br><span id="weight-label-online-safety" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-online-safety"></div></div>
+                <span id="progress-text-online-safety" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#fffacd; font-weight:bold; font-size: 20px;">
+            <td colspan="3" style="text-align:left;">🕊️ Religious Education</td>
+        </tr>
+    
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 World Religions</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-world-religions" oninput="updateSlider('world-religions')">
+                <br><span id="weight-label-world-religions" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-world-religions"></div></div>
+                <span id="progress-text-world-religions" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Philosophy</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-philosophy" oninput="updateSlider('philosophy')">
+                <br><span id="weight-label-philosophy" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-philosophy"></div></div>
+                <span id="progress-text-philosophy" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Ethics & Morality</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-ethics--morality" oninput="updateSlider('ethics--morality')">
+                <br><span id="weight-label-ethics--morality" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-ethics--morality"></div></div>
+                <span id="progress-text-ethics--morality" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+        <tr style="background-color:#ffffff;">
+            <td style="text-align:left; font-size: 16px;">🟢 Festivals</td>
+            <td>
+                <input type="range" min="1" max="5" value="3" class="slider" id="slider-festivals" oninput="updateSlider('festivals')">
+                <br><span id="weight-label-festivals" style="font-size:14px;">3</span>
+            </td>
+            <td>
+                <div class="progress-bar"><div class="progress-fill" id="progress-bar-festivals"></div></div>
+                <span id="progress-text-festivals" style="font-size:14px;">0%</span>
+            </td>
+        </tr>
+        
+    </table>
+
+<script>
+    function filterTopics(type) {
+        const rows = document.querySelectorAll("table tr");
+        rows.forEach(row => {
+            if (row.querySelector(".slider")) {
+                const id = row.querySelector(".slider").id.replace("slider-", "");
+                const weight = parseInt(document.getElementById("slider-" + id).value);
+                const progress = parseInt(document.getElementById("progress-text-" + id).innerText.replace('%',''));
+
+                if (type === 'all') {
+                    row.style.display = '';
+                } else if (type === 'focus' && (progress < 50 && weight >= 4)) {
+                    row.style.display = '';
+                } else if (type === 'priority' && weight == 5) {
+                    row.style.display = '';
+                } else if (type === 'complete' && progress >= 80) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    }
+</script>
+
+
+<script>
+function generatePDF() {
+    const studentName = document.getElementById("studentName").value || "Student";
+    const printContents = document.body.innerHTML;
+    const win = window.open('', '', 'height=842,width=595');
+    win.document.write('<html><head><title>' + studentName + ' – Curriculum Report</title></head><body>');
+    win.document.write('<h2 style="text-align:center;">' + studentName + "'s Year 8 Learning Progress</h2>");
+    win.document.write(printContents);
+    win.document.write('</body></html>');
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 500);
+}
+</script>
+</body>
+
+</html>
