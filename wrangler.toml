@@ -1,0 +1,20 @@
+name = "weekly-timesheet-app"
+main = "worker.js"
+compatibility_date = "2024-10-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[vars]
+ADMIN_TOKEN = "change-me-admin-token"
+
+[[kv_namespaces]]
+binding = "USERS"
+id = "REPLACE_USERS_NAMESPACE_ID"
+preview_id = "REPLACE_USERS_PREVIEW_NAMESPACE_ID"
+
+[[kv_namespaces]]
+binding = "TIMESHEETS"
+id = "REPLACE_TIMESHEETS_NAMESPACE_ID"
+preview_id = "REPLACE_TIMESHEETS_PREVIEW_NAMESPACE_ID"

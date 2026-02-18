@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .row { display: flex; gap: 10px; margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    .total { font-weight: 700; margin-top: 14px; }
+    a.btn { padding: 8px 12px; border: 1px solid #aaa; background: #f5f5f5; text-decoration: none; color: #000; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Invoice Preview</h1>
+  <div class="row">
+    <a class="btn" href="/dashboard.html">Back to Dashboard</a>
+    <a class="btn" id="printLink" target="_blank">Printable Invoice</a>
+  </div>
+
+  <div id="invoice"></div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const year = params.get('year');
+    const weekNumber = params.get('weekNumber');
+    const invoiceEl = document.getElementById('invoice');
+    const printLink = document.getElementById('printLink');
+
+    if (!year || !weekNumber) {
+      invoiceEl.textContent = 'Missing year/weekNumber query parameters';
+    } else {
+      loadInvoice();
+    }
+
+    async function loadInvoice() {
+      const res = await fetch(`/api/invoice?year=${year}&weekNumber=${weekNumber}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        invoiceEl.textContent = data.error || 'Failed to load invoice';
+        return;
+      }
+
+      const inv = data.invoice;
+      const rows = inv.timesheet.entries
+        .map(e => `<tr><td>${e.day}</td><td>${e.hours}</td><td>${e.description || ''}</td></tr>`)
+        .join('');
+
+      invoiceEl.innerHTML = `
+        <p><strong>Invoice Number:</strong> ${inv.invoiceNumber}</p>
+        <p><strong>Contractor:</strong> ${inv.user.companyName || inv.user.fullName}</p>
+        <p><strong>Email:</strong> ${inv.user.email || ''}</p>
+        <p><strong>Week:</strong> ${inv.timesheet.weekNumber}, ${inv.timesheet.year}</p>
+        <table>
+          <thead><tr><th>Day</th><th>Hours</th><th>Description</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div class="total">Total Amount: ${inv.totalAmount.toFixed(2)}</div>
+      `;
+
+      printLink.href = `/api/invoice/print?year=${year}&weekNumber=${weekNumber}`;
+    }
+  </script>
+</body>
+</html>
