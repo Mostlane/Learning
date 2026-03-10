@@ -1,43 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job System</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-  </head>
-  <body>
-    <main class="page">
-      <header class="page-header">
-        <div>
-          <h1 data-page-title style="margin:0;font-size:1.2rem"></h1>
-          <p class="text-muted" style="margin:6px 0 0">Cloudflare internal engineering portal scaffold.</p>
-        </div>
-        <span class="badge" data-session-status>Checking session...</span>
-      </header>
-
-      <section class="grid cols-2" style="margin-top:18px;">
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Stage 1 scaffold</h2>
-          <p class="text-muted">This page is wired to shared theme styles, shared API helper, and the live Worker URL.</p>
-          <button class="btn btn-primary" type="button">Primary Action</button>
-          <button class="btn btn-secondary" type="button">Secondary Action</button>
-        </article>
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Timeline style preview</h2>
-          <ul class="timeline">
-            <li><strong>Job raised</strong><div class="text-muted">Awaiting next stages.</div></li>
-            <li><strong>Scaffold created</strong><div class="text-muted">Shared design language active.</div></li>
-          </ul>
-        </article>
-      </section>
-    </main>
-
-    <script type="module" src="../js/main.js"></script>
-    <script>
-      const fileName = location.pathname.split('/').pop() || 'page';
-      document.querySelector('[data-page-title]').textContent = fileName;
-      document.title = `Job System | ${fileName}`;
-    </script>
-  </body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Engineer View</title><link rel="stylesheet" href="../css/theme.css"/></head>
+<body><main class="page"><header class="page-header"><div><div class="brand">Engineer Workboard</div><h1 style="margin:.2rem 0">My Jobs</h1></div><div class="row"><span class="badge" data-session-status></span><button id="logout" class="btn btn-secondary">Logout</button></div></header>
+<div id="off-notice" class="notice hidden" style="margin-top:10px"></div>
+<section class="card" style="margin-top:12px"><form id="off-filter" class="row"><input class="input" name="date" type="date"/><button class="btn btn-secondary" type="submit">Load Day</button></form></section>
+<section class="grid cols-2" id="off-jobs" style="margin-top:12px"></section>
+</main><script type="module" src="../js/pages/off-view.js"></script></body></html>

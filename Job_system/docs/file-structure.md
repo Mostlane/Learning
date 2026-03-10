@@ -1,30 +1,21 @@
-# Stage 1 File List
+# Repository Structure
 
-## Created
-
-- `README.md`
-- `frontend/css/theme.css`
-- `frontend/js/config.js`
-- `frontend/js/api.js`
-- `frontend/js/main.js`
-- `frontend/pages/login.html`
-- `frontend/pages/admin.html`
-- `frontend/pages/job-view.html`
-- `frontend/pages/off-view.html`
-- `frontend/pages/financial.html`
-- `frontend/pages/scheduler.html`
-- `worker/wrangler.toml`
-- `worker/src/index.js`
-- `worker/src/utils/response.js`
-- `docs/file-structure.md`
-- `docs/setup-notes.md`
-- `docs/testing-notes.md`
-
-## Prepared empty directories for upcoming stages
-
-- `database/`
-- `worker/src/routes/`
-- `worker/src/middleware/`
-- `worker/src/services/`
-- `worker/src/constants/`
-- `frontend/assets/images/`
+- `frontend/css/theme.css` shared visual design system.
+- `frontend/js/config.js` central constants and backend URL.
+- `frontend/js/api.js` universal API helper for auth/jobs/scheduler/financial/materials/exports.
+- `frontend/js/helpers.js` guards, UI helpers, formatting, notices.
+- `frontend/js/pages/*.js` page controllers:
+  - `login.js`
+  - `admin.js`
+  - `job-view.js`
+  - `off-view.js`
+  - `financial.js`
+  - `scheduler.js`
+- `frontend/pages/*.html` real UI pages.
+- `worker/src/index.js` Worker entry.
+- `worker/src/routes/index.js` route handlers and permission checks.
+- `worker/src/middleware/auth.js` session + role middleware.
+- `worker/src/services/workflow.js` active-job and completion enforcement helpers.
+- `database/schema.sql` full D1 schema and indexes.
+- `docs/setup-notes.md` infrastructure setup instructions.
+- `docs/testing-notes.md` functional test checklist.

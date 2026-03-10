@@ -1,43 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job System</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-  </head>
-  <body>
-    <main class="page">
-      <header class="page-header">
-        <div>
-          <h1 data-page-title style="margin:0;font-size:1.2rem"></h1>
-          <p class="text-muted" style="margin:6px 0 0">Cloudflare internal engineering portal scaffold.</p>
-        </div>
-        <span class="badge" data-session-status>Checking session...</span>
-      </header>
-
-      <section class="grid cols-2" style="margin-top:18px;">
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Stage 1 scaffold</h2>
-          <p class="text-muted">This page is wired to shared theme styles, shared API helper, and the live Worker URL.</p>
-          <button class="btn btn-primary" type="button">Primary Action</button>
-          <button class="btn btn-secondary" type="button">Secondary Action</button>
-        </article>
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Timeline style preview</h2>
-          <ul class="timeline">
-            <li><strong>Job raised</strong><div class="text-muted">Awaiting next stages.</div></li>
-            <li><strong>Scaffold created</strong><div class="text-muted">Shared design language active.</div></li>
-          </ul>
-        </article>
-      </section>
-    </main>
-
-    <script type="module" src="../js/main.js"></script>
-    <script>
-      const fileName = location.pathname.split('/').pop() || 'page';
-      document.querySelector('[data-page-title]').textContent = fileName;
-      document.title = `Job System | ${fileName}`;
-    </script>
-  </body>
-</html>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cloudflare Job Portal | Login</title><link rel="stylesheet" href="../css/theme.css"/>
+</head><body><main class="page" style="max-width:680px">
+<header class="page-header"><div><div class="brand">Mostlane / Cloudflare Portal</div><h1 style="margin:.4rem 0">Secure Login</h1><p class="text-muted" style="margin:0">Master, office, and engineer login flow.</p></div><span class="badge" data-session-status>Checking...</span></header>
+<section class="card" style="margin-top:16px">
+<form id="login-form" class="grid">
+<div><label>Username</label><input class="input" id="username" required autocomplete="username"/></div>
+<div><label>Password</label><input class="input" id="password" type="password" required autocomplete="current-password"/></div>
+<div class="row"><button class="btn btn-primary" type="submit">Sign In</button></div>
+<div id="login-notice" class="notice hidden"></div>
+</form>
+<p class="text-muted">Initial master login is configured in backend seed data and should be changed after first sign-in.</p>
+</section>
+</main><script type="module" src="../js/pages/login.js"></script></body></html>

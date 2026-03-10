@@ -1,43 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job System</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-  </head>
-  <body>
-    <main class="page">
-      <header class="page-header">
-        <div>
-          <h1 data-page-title style="margin:0;font-size:1.2rem"></h1>
-          <p class="text-muted" style="margin:6px 0 0">Cloudflare internal engineering portal scaffold.</p>
-        </div>
-        <span class="badge" data-session-status>Checking session...</span>
-      </header>
-
-      <section class="grid cols-2" style="margin-top:18px;">
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Stage 1 scaffold</h2>
-          <p class="text-muted">This page is wired to shared theme styles, shared API helper, and the live Worker URL.</p>
-          <button class="btn btn-primary" type="button">Primary Action</button>
-          <button class="btn btn-secondary" type="button">Secondary Action</button>
-        </article>
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Timeline style preview</h2>
-          <ul class="timeline">
-            <li><strong>Job raised</strong><div class="text-muted">Awaiting next stages.</div></li>
-            <li><strong>Scaffold created</strong><div class="text-muted">Shared design language active.</div></li>
-          </ul>
-        </article>
-      </section>
-    </main>
-
-    <script type="module" src="../js/main.js"></script>
-    <script>
-      const fileName = location.pathname.split('/').pop() || 'page';
-      document.querySelector('[data-page-title]').textContent = fileName;
-      document.title = `Job System | ${fileName}`;
-    </script>
-  </body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Financial</title><link rel="stylesheet" href="../css/theme.css"/></head>
+<body><main class="page"><header class="page-header"><div><div class="brand">Financial Control</div><h1 style="margin:.2rem 0">Rates, Costing, Export</h1></div><div class="row"><span class="badge" data-session-status></span><a class="btn btn-secondary" href="admin.html">Back</a></div></header>
+<div id="financial-notice" class="notice hidden" style="margin-top:10px"></div>
+<section class="grid cols-2" style="margin-top:12px"><article class="card"><h3>Default Rates</h3><form id="defaults-form" class="grid"><input class="input" name="labourRate" type="number" step="0.01" placeholder="Labour rate"/><input class="input" name="fuelRate" type="number" step="0.01" placeholder="Fuel rate"/><input class="input" name="clientLabourRate" type="number" step="0.01" placeholder="Client labour"/><input class="input" name="clientFuelRate" type="number" step="0.01" placeholder="Client fuel"/><button class="btn btn-primary" type="submit">Save Defaults</button></form></article>
+<article class="card"><h3>Job Cost Edit + Export</h3><form id="job-cost-form" class="grid"><input class="input" name="jobId" placeholder="Job ID" required/><input class="input" name="mostlaneTotal" type="number" step="0.01" placeholder="Mostlane total"/><input class="input" name="clientTotal" type="number" step="0.01" placeholder="Client total"/><textarea class="textarea" name="exportNotes" placeholder="Export notes"></textarea><select class="select" name="exportMode"><option value="mostlane">Show Mostlane cost</option><option value="client">Show Client cost</option><option value="none">No cost</option></select><button class="btn btn-secondary" type="submit">Update + Generate Export</button></form></article></section>
+<section class="card" style="margin-top:12px"><h3>Cost Summary</h3><div class="table-wrap"><table class="table"><thead><tr><th>Job</th><th>Actual</th><th>Client</th><th>Status</th></tr></thead><tbody id="financial-body"></tbody></table></div></section>
+</main><script type="module" src="../js/pages/financial.js"></script></body></html>
