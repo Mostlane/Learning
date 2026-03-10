@@ -62,6 +62,11 @@
       background:#fff;
       color:var(--text);
       -webkit-tap-highlight-color: transparent;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-sizing:border-box;
     }
     .btn.primary{
       background:var(--ml-blue-light);
@@ -819,6 +824,19 @@
     const API_BASE = "https://job-application.jamie-def.workers.dev";
     const SITES_API_BASE = "https://mostlane-sites.jamie-def.workers.dev";
     const SITE_CATEGORIES = ["retail","els","els_private","cobra","projects","wenzels","fbc"];
+
+    function escapeHtml(v) {
+      return String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeAttr(v) {
+      return String(v ?? "").replace(/'/g, "\\'");
+    }
 
     const els = {
       badge: document.getElementById("sessionBadge"),
