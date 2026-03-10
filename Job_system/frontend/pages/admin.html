@@ -21,7 +21,8 @@
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      background:var(--bg);
+      background:#e6e8eb url('Mostlane_Embossed.png') no-repeat center center fixed;
+      background-size:cover;
     }
     .shell{
       max-width:1280px;
@@ -54,12 +55,13 @@
     .btn{
       border-radius:999px;
       border:1px solid #cbd5e1;
-      padding:9px 14px;
+      padding:10px 14px;
       font-size:14px;
       font-weight:700;
       cursor:pointer;
       background:#fff;
       color:var(--text);
+      -webkit-tap-highlight-color: transparent;
     }
     .btn.primary{
       background:var(--ml-blue-light);
@@ -72,7 +74,7 @@
       color:#b91c1c;
     }
     .btn.small{
-      padding:7px 10px;
+      padding:8px 11px;
       font-size:12px;
     }
     .pill{
@@ -98,21 +100,33 @@
     @media(max-width:900px){
       .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
     }
-    .stat{
+
+    .kpi-btn{
+      appearance:none;
+      -webkit-appearance:none;
+      width:100%;
+      text-align:left;
+      background:var(--panel);
+      border:1px solid rgba(209,213,219,0.65);
+      border-radius:16px;
+      box-shadow:0 12px 28px rgba(0,0,0,0.12);
       padding:16px;
       cursor:pointer;
       transition:.18s ease;
+      -webkit-tap-highlight-color: transparent;
     }
-    .stat:hover{
+    .kpi-btn:hover,
+    .kpi-btn:active{
       transform:translateY(-1px);
       box-shadow:0 10px 24px rgba(0,0,0,.08);
     }
-    .stat .n{
+    .kpi-btn .n{
       font-size:28px;
       font-weight:800;
       color:var(--ml-blue);
       margin-top:6px;
     }
+
     .field-group{margin-bottom:12px;}
     label{
       display:block;
@@ -199,6 +213,7 @@
     .site-preview .muted{
       font-size:12px;
     }
+
     .modal{
       position:fixed;
       inset:0;
@@ -240,6 +255,15 @@
       cursor:pointer;
       color:#6b7280;
     }
+
+    @media(max-width:640px){
+      th:nth-child(7), td:nth-child(7){
+        display:none;
+      }
+      .btn.small{
+        width:100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -263,22 +287,25 @@
         <div id="pageNotice" class="notice"></div>
 
         <div class="grid grid-4">
-          <div class="card stat" id="kpiCardTotal">
+          <button class="kpi-btn" id="kpiCardTotal" type="button">
             <div class="muted">Total Jobs</div>
             <div class="n" id="kpiTotal">0</div>
-          </div>
-          <div class="card stat" id="kpiCardOpen">
+          </button>
+
+          <button class="kpi-btn" id="kpiCardOpen" type="button">
             <div class="muted">Open Jobs</div>
             <div class="n" id="kpiOpen">0</div>
-          </div>
-          <div class="card stat" id="kpiCardOverdue">
+          </button>
+
+          <button class="kpi-btn" id="kpiCardOverdue" type="button">
             <div class="muted">Overdue Jobs</div>
             <div class="n" id="kpiOverdue">0</div>
-          </div>
-          <div class="card stat" id="kpiCardHolds">
+          </button>
+
+          <button class="kpi-btn" id="kpiCardHolds" type="button">
             <div class="muted">Pending Holds</div>
             <div class="n" id="kpiHolds">0</div>
-          </div>
+          </button>
         </div>
 
         <div class="grid grid-2" style="margin-top:16px;">
@@ -940,10 +967,7 @@
 
       const res = await fetch(API_BASE + path, { ...options, headers });
       const data = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        throw new Error(data.error || "Request failed");
-      }
+      if (!res.ok) throw new Error(data.error || "Request failed");
       return data;
     }
 
@@ -1227,6 +1251,14 @@
       }
     }
 
+    function resetJobFilters() {
+      document.getElementById("filterSearch").value = "";
+      document.getElementById("filterStatus").value = "";
+      document.getElementById("filterEngineer").value = "";
+      document.getElementById("filterDate").value = "";
+      document.getElementById("filterOverdue").checked = false;
+    }
+
     els.siteCategory.addEventListener("change", async () => {
       clearSitePreview();
       await loadSitesForSelect(els.siteCategory.value);
@@ -1394,11 +1426,7 @@
     });
 
     els.clearFiltersBtn.addEventListener("click", async () => {
-      document.getElementById("filterSearch").value = "";
-      document.getElementById("filterStatus").value = "";
-      document.getElementById("filterEngineer").value = "";
-      document.getElementById("filterDate").value = "";
-      document.getElementById("filterOverdue").checked = false;
+      resetJobFilters();
       await loadJobs();
     });
 
@@ -1423,41 +1451,28 @@
       if (e.target === els.editJobModal) closeEditJobModal();
     });
 
-    els.kpiCardTotal.addEventListener("click", async () => {
-      document.getElementById("filterSearch").value = "";
-      document.getElementById("filterStatus").value = "";
-      document.getElementById("filterEngineer").value = "";
-      document.getElementById("filterDate").value = "";
-      document.getElementById("filterOverdue").checked = false;
+    els.kpiCardTotal.onclick = async function () {
+      resetJobFilters();
       await loadJobs();
-    });
+    };
 
-    els.kpiCardOpen.addEventListener("click", async () => {
-      document.getElementById("filterSearch").value = "";
+    els.kpiCardOpen.onclick = async function () {
+      resetJobFilters();
       document.getElementById("filterStatus").value = "Pending";
-      document.getElementById("filterEngineer").value = "";
-      document.getElementById("filterDate").value = "";
-      document.getElementById("filterOverdue").checked = false;
       await loadJobs();
-    });
+    };
 
-    els.kpiCardOverdue.addEventListener("click", async () => {
-      document.getElementById("filterSearch").value = "";
-      document.getElementById("filterStatus").value = "";
-      document.getElementById("filterEngineer").value = "";
-      document.getElementById("filterDate").value = "";
+    els.kpiCardOverdue.onclick = async function () {
+      resetJobFilters();
       document.getElementById("filterOverdue").checked = true;
       await loadJobs();
-    });
+    };
 
-    els.kpiCardHolds.addEventListener("click", async () => {
-      document.getElementById("filterSearch").value = "";
+    els.kpiCardHolds.onclick = async function () {
+      resetJobFilters();
       document.getElementById("filterStatus").value = "Awaiting Hold Approval";
-      document.getElementById("filterEngineer").value = "";
-      document.getElementById("filterDate").value = "";
-      document.getElementById("filterOverdue").checked = false;
       await loadJobs();
-    });
+    };
 
     function formatDate(iso) {
       if (!iso) return "–";
