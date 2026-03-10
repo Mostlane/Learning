@@ -838,6 +838,19 @@
       return String(v ?? "").replace(/'/g, "\\'");
     }
 
+    function formatDate(iso) {
+      if (!iso) return "–";
+      const d = new Date(iso);
+      if (isNaN(d)) return "–";
+      return d.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
     const els = {
       badge: document.getElementById("sessionBadge"),
       notice: document.getElementById("pageNotice"),
