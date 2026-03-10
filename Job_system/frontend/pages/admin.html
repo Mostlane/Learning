@@ -90,6 +90,7 @@
     .pill.ok{background:#ecfdf3;color:#166534;}
     .pill.warn{background:#fffbeb;color:#92400e;}
     .pill.bad{background:#fef2f2;color:#b91c1c;}
+
     .grid{
       display:grid;
       gap:16px;
@@ -158,6 +159,7 @@
     @media(max-width:700px){
       .row-2{grid-template-columns:1fr;}
     }
+
     .table-wrap{overflow:auto;}
     table{
       width:100%;
@@ -171,7 +173,13 @@
       font-size:14px;
       vertical-align:top;
     }
-    th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+    th{
+      font-size:12px;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
     .notice{
       margin-top:12px;
       padding:12px 14px;
@@ -184,6 +192,7 @@
     .notice.ok{background:#ecfdf3;color:#166534;}
     .notice.bad{background:#fef2f2;color:#b91c1c;}
     .notice.warn{background:#fffbeb;color:#92400e;}
+
     .section-title{
       display:flex;
       justify-content:space-between;
@@ -192,6 +201,7 @@
       flex-wrap:wrap;
       margin-bottom:10px;
     }
+
     .list{
       display:grid;
       gap:10px;
@@ -203,6 +213,7 @@
       padding:12px;
       background:#fff;
     }
+
     .site-preview{
       border:1px solid #dbeafe;
       background:#f8fbff;
@@ -287,22 +298,22 @@
         <div id="pageNotice" class="notice"></div>
 
         <div class="grid grid-4">
-          <button class="kpi-btn" id="kpiCardTotal" type="button">
+          <button class="kpi-btn" type="button" onclick="filterJobsFromKpi('all')">
             <div class="muted">Total Jobs</div>
             <div class="n" id="kpiTotal">0</div>
           </button>
 
-          <button class="kpi-btn" id="kpiCardOpen" type="button">
+          <button class="kpi-btn" type="button" onclick="filterJobsFromKpi('open')">
             <div class="muted">Open Jobs</div>
             <div class="n" id="kpiOpen">0</div>
           </button>
 
-          <button class="kpi-btn" id="kpiCardOverdue" type="button">
+          <button class="kpi-btn" type="button" onclick="filterJobsFromKpi('overdue')">
             <div class="muted">Overdue Jobs</div>
             <div class="n" id="kpiOverdue">0</div>
           </button>
 
-          <button class="kpi-btn" id="kpiCardHolds" type="button">
+          <button class="kpi-btn" type="button" onclick="filterJobsFromKpi('holds')">
             <div class="muted">Pending Holds</div>
             <div class="n" id="kpiHolds">0</div>
           </button>
@@ -822,14 +833,11 @@
       sitesBox: document.getElementById("sitesBox"),
       clientsBox: document.getElementById("clientsBox"),
       engineersBox: document.getElementById("engineersBox"),
+
       kpiTotal: document.getElementById("kpiTotal"),
       kpiOpen: document.getElementById("kpiOpen"),
       kpiOverdue: document.getElementById("kpiOverdue"),
       kpiHolds: document.getElementById("kpiHolds"),
-      kpiCardTotal: document.getElementById("kpiCardTotal"),
-      kpiCardOpen: document.getElementById("kpiCardOpen"),
-      kpiCardOverdue: document.getElementById("kpiCardOverdue"),
-      kpiCardHolds: document.getElementById("kpiCardHolds"),
 
       siteCategory: document.getElementById("siteCategory"),
       siteSelect: document.getElementById("siteSelect"),
@@ -958,16 +966,21 @@
 
     async function api(path, options = {}) {
       const headers = { ...(options.headers || {}) };
+
       if (!(options.body instanceof FormData)) {
         headers["Content-Type"] = headers["Content-Type"] || "application/json";
       }
+
       if (token()) {
         headers["Authorization"] = "Bearer " + token();
       }
 
       const res = await fetch(API_BASE + path, { ...options, headers });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || "Request failed");
+
+      if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+      }
       return data;
     }
 
@@ -982,6 +995,7 @@
       try {
         const data = await api("/auth/me", { method: "GET" });
         if (!data.ok || !data.user) throw new Error("No session");
+
         setBadge(`${data.user.role}`, "ok");
 
         if (!["master", "office_admin", "office_standard"].includes(data.user.role)) {
@@ -1259,6 +1273,24 @@
       document.getElementById("filterOverdue").checked = false;
     }
 
+    async function filterJobsFromKpi(type) {
+      resetJobFilters();
+
+      if (type === "open") {
+        document.getElementById("filterStatus").value = "Pending";
+      } else if (type === "overdue") {
+        document.getElementById("filterOverdue").checked = true;
+      } else if (type === "holds") {
+        document.getElementById("filterStatus").value = "Awaiting Hold Approval";
+      }
+
+      await loadJobs();
+    }
+
+    window.filterJobsFromKpi = filterJobsFromKpi;
+    window.openEditJob = openEditJob;
+    window.confirmDeleteJob = confirmDeleteJob;
+
     els.siteCategory.addEventListener("change", async () => {
       clearSitePreview();
       await loadSitesForSelect(els.siteCategory.value);
@@ -1352,7 +1384,12 @@
           body: JSON.stringify(payload)
         });
 
-        showAddSiteNotice(isProject && result.jobNumber ? `Site added. Project job number ${result.jobNumber} assigned.` : "Site added successfully.", "ok");
+        showAddSiteNotice(
+          isProject && result.jobNumber
+            ? `Site added. Project job number ${result.jobNumber} assigned.`
+            : "Site added successfully.",
+          "ok"
+        );
 
         await loadSitesCategory(category);
         if (els.siteCategory.value === category) await loadSitesForSelect(category);
@@ -1450,58 +1487,6 @@
     els.editJobModal.addEventListener("click", (e) => {
       if (e.target === els.editJobModal) closeEditJobModal();
     });
-
-    els.kpiCardTotal.onclick = async function () {
-      resetJobFilters();
-      await loadJobs();
-    };
-
-    els.kpiCardOpen.onclick = async function () {
-      resetJobFilters();
-      document.getElementById("filterStatus").value = "Pending";
-      await loadJobs();
-    };
-
-    els.kpiCardOverdue.onclick = async function () {
-      resetJobFilters();
-      document.getElementById("filterOverdue").checked = true;
-      await loadJobs();
-    };
-
-    els.kpiCardHolds.onclick = async function () {
-      resetJobFilters();
-      document.getElementById("filterStatus").value = "Awaiting Hold Approval";
-      await loadJobs();
-    };
-
-    function formatDate(iso) {
-      if (!iso) return "–";
-      const d = new Date(iso);
-      if (isNaN(d)) return "–";
-      return d.toLocaleString("en-GB", {
-        day:"2-digit",
-        month:"short",
-        year:"numeric",
-        hour:"2-digit",
-        minute:"2-digit"
-      });
-    }
-
-    function escapeHtml(v) {
-      return String(v ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-    }
-
-    function escapeAttr(v) {
-      return String(v ?? "").replace(/'/g, "\\'");
-    }
-
-    window.openEditJob = openEditJob;
-    window.confirmDeleteJob = confirmDeleteJob;
 
     (async function init() {
       const ok = await ensureSession();
