@@ -71,6 +71,10 @@
       border-color:#fecaca;
       color:#b91c1c;
     }
+    .btn.small{
+      padding:7px 10px;
+      font-size:12px;
+    }
     .pill{
       display:inline-flex;
       align-items:center;
@@ -170,6 +174,66 @@
       padding:12px;
       background:#fff;
     }
+    .site-preview{
+      border:1px solid #dbeafe;
+      background:#f8fbff;
+      border-radius:12px;
+      padding:12px;
+      margin-top:8px;
+    }
+    .site-preview .muted{
+      font-size:12px;
+    }
+    .row-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media(max-width:700px){
+      .row-2{grid-template-columns:1fr;}
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:1000;
+      padding:16px;
+    }
+    .modal.active{display:flex;}
+    .modal-content{
+      width:min(760px, 100%);
+      max-height:90vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 18px 36px rgba(0,0,0,.24);
+      border:1px solid #e5e7eb;
+    }
+    .modal-head{
+      padding:16px 18px;
+      border-bottom:1px solid #e5e7eb;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      position:sticky;
+      top:0;
+      background:#fff;
+    }
+    .modal-body{
+      padding:18px;
+    }
+    .close-btn{
+      border:none;
+      background:none;
+      font-size:20px;
+      cursor:pointer;
+      color:#6b7280;
+    }
   </style>
 </head>
 <body>
@@ -216,50 +280,129 @@
             <div class="content">
               <div class="section-title">
                 <h2>Create Job</h2>
+                <button class="btn small" id="openAddSiteModalBtn" type="button">Add Site</button>
               </div>
 
               <form id="createJobForm">
                 <div class="field-group">
-                  <label for="helpdeskRef">Helpdesk Ref</label>
-                  <input id="helpdeskRef" required />
-                </div>
-
-                <div class="field-group">
-                  <label for="siteCode">Site Code</label>
-                  <input id="siteCode" required />
-                </div>
-
-                <div class="field-group">
-                  <label for="siteName">Site Name</label>
-                  <input id="siteName" required />
-                </div>
-
-                <div class="field-group">
-                  <label for="priority">Priority</label>
-                  <select id="priority">
-                    <option value="P1">P1</option>
-                    <option value="P2">P2</option>
-                    <option value="P3">P3</option>
-                    <option value="P4" selected>P4</option>
-                    <option value="P5">P5</option>
+                  <label for="siteCategory">Site Category</label>
+                  <select id="siteCategory" required>
+                    <option value="">Select category</option>
+                    <option value="retail">Retail</option>
+                    <option value="els">ELS</option>
+                    <option value="els_private">ELS Private</option>
+                    <option value="cobra">Cobra</option>
+                    <option value="projects">Projects</option>
+                    <option value="wenzels">Wenzels</option>
+                    <option value="fbc">Fareham Borough Council</option>
                   </select>
                 </div>
 
                 <div class="field-group">
-                  <label for="currentStatus">Status</label>
-                  <select id="currentStatus">
-                    <option value="Pending">Pending</option>
-                    <option value="Scheduled">Scheduled</option>
-                    <option value="Travelling">Travelling</option>
-                    <option value="On Site">On Site</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Hold Requested">Hold Requested</option>
-                    <option value="Awaiting Hold Approval">Awaiting Hold Approval</option>
-                    <option value="On Hold">On Hold</option>
-                    <option value="Hold Rejected">Hold Rejected</option>
-                    <option value="Complete">Complete</option>
-                    <option value="Closed">Closed</option>
+                  <label for="siteSelect">Select Site</label>
+                  <select id="siteSelect">
+                    <option value="">Choose category first</option>
                   </select>
+                </div>
+
+                <div class="site-preview" id="sitePreview">
+                  <div><strong id="previewName">No site selected</strong></div>
+                  <div class="muted" id="previewMeta">Select a category and site to prefill details.</div>
+                </div>
+
+                <div class="row-2" style="margin-top:12px;">
+                  <div class="field-group">
+                    <label for="helpdeskRef">Helpdesk Ref</label>
+                    <input id="helpdeskRef" required />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="projectNextNumber">Project Job Number</label>
+                    <input id="projectNextNumber" readonly placeholder="Auto for projects only" />
+                  </div>
+                </div>
+
+                <div class="row-2">
+                  <div class="field-group">
+                    <label for="siteCode">Site Code</label>
+                    <input id="siteCode" required />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="siteName">Site Name</label>
+                    <input id="siteName" required />
+                  </div>
+                </div>
+
+                <div class="row-2">
+                  <div class="field-group">
+                    <label for="sitePostcode">Postcode</label>
+                    <input id="sitePostcode" />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="contactTel">Phone</label>
+                    <input id="contactTel" />
+                  </div>
+                </div>
+
+                <div class="row-2">
+                  <div class="field-group">
+                    <label for="siteMileage">Mileage From HQ</label>
+                    <input id="siteMileage" />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="siteTravelMins">Travel Minutes</label>
+                    <input id="siteTravelMins" />
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label for="sharepointUrl">SharePoint URL</label>
+                  <input id="sharepointUrl" />
+                </div>
+
+                <div class="row-2">
+                  <div class="field-group">
+                    <label for="siteLat">Latitude</label>
+                    <input id="siteLat" />
+                  </div>
+
+                  <div class="field-group">
+                    <label for="siteLon">Longitude</label>
+                    <input id="siteLon" />
+                  </div>
+                </div>
+
+                <div class="row-2">
+                  <div class="field-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority">
+                      <option value="P1">P1</option>
+                      <option value="P2">P2</option>
+                      <option value="P3">P3</option>
+                      <option value="P4" selected>P4</option>
+                      <option value="P5">P5</option>
+                    </select>
+                  </div>
+
+                  <div class="field-group">
+                    <label for="currentStatus">Status</label>
+                    <select id="currentStatus">
+                      <option value="Pending">Pending</option>
+                      <option value="Scheduled">Scheduled</option>
+                      <option value="Travelling">Travelling</option>
+                      <option value="On Site">On Site</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Hold Requested">Hold Requested</option>
+                      <option value="Awaiting Hold Approval">Awaiting Hold Approval</option>
+                      <option value="On Hold">On Hold</option>
+                      <option value="Hold Rejected">Hold Rejected</option>
+                      <option value="Complete">Complete</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div class="field-group">
@@ -367,6 +510,7 @@
             <div class="content">
               <div class="section-title">
                 <h2>Master Data</h2>
+                <button class="btn small" id="openAddSiteModalBtn2" type="button">Add Site</button>
               </div>
 
               <div class="grid grid-3">
@@ -375,7 +519,7 @@
                   <div id="sitesBox" class="list"></div>
                 </div>
                 <div>
-                  <h3>Clients</h3>
+                  <h3>Clients / Categories</h3>
                   <div id="clientsBox" class="list"></div>
                 </div>
                 <div>
@@ -385,7 +529,7 @@
               </div>
 
               <div class="notice show warn" style="margin-top:16px;">
-                User management is not in your current Worker yet. Once we add <strong>/api/users</strong> and <strong>/api/roles</strong>, this admin page can manage office and engineer accounts too.
+                Site lists below are loaded from your separate sites worker and can now be added to directly from this page.
               </div>
             </div>
           </div>
@@ -395,8 +539,115 @@
     </div>
   </div>
 
+  <!-- ADD SITE MODAL -->
+  <div class="modal" id="addSiteModal">
+    <div class="modal-content">
+      <div class="modal-head">
+        <div>
+          <div class="muted">Mostlane / Site Manager</div>
+          <h2>Add Site</h2>
+        </div>
+        <button class="close-btn" id="closeAddSiteModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="addSiteNotice" class="notice"></div>
+
+        <form id="addSiteForm">
+          <div class="field-group">
+            <label for="addSiteCategory">Client / Category</label>
+            <select id="addSiteCategory" required>
+              <option value="retail">Retail</option>
+              <option value="els">ELS</option>
+              <option value="els_private">ELS Private</option>
+              <option value="cobra">Cobra</option>
+              <option value="projects">Projects</option>
+              <option value="wenzels">Wenzels</option>
+              <option value="fbc">Fareham Borough Council</option>
+            </select>
+          </div>
+
+          <div class="row-2">
+            <div class="field-group" id="addSiteNumberWrap">
+              <label for="addSiteNumber">Site Number</label>
+              <input id="addSiteNumber" />
+            </div>
+            <div class="field-group" id="addProjectNumberWrap" style="display:none;">
+              <label for="addProjectNumberPreview">Project Job Number</label>
+              <input id="addProjectNumberPreview" readonly />
+            </div>
+            <div class="field-group">
+              <label for="addSiteActive">Active</label>
+              <select id="addSiteActive">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="addSiteName">Site Name</label>
+            <input id="addSiteName" required />
+          </div>
+
+          <div class="row-2">
+            <div class="field-group">
+              <label for="addSitePostcode">Postcode</label>
+              <input id="addSitePostcode" required />
+            </div>
+            <div class="field-group">
+              <label for="addSitePhone">Phone</label>
+              <input id="addSitePhone" />
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field-group">
+              <label for="addSiteLat">Latitude</label>
+              <input id="addSiteLat" />
+            </div>
+            <div class="field-group">
+              <label for="addSiteLon">Longitude</label>
+              <input id="addSiteLon" />
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field-group">
+              <label for="addSiteMileage">Mileage From HQ</label>
+              <input id="addSiteMileage" />
+            </div>
+            <div class="field-group">
+              <label for="addTravelMins">Travel Minutes</label>
+              <input id="addTravelMins" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="addSharepointUrl">SharePoint URL</label>
+            <input id="addSharepointUrl" />
+          </div>
+
+          <div class="field-group">
+            <label for="addImageUrl">Image URL</label>
+            <input id="addImageUrl" />
+          </div>
+
+          <div class="row">
+            <button class="btn primary" type="submit">Save Site</button>
+            <button class="btn" type="button" id="cancelAddSiteBtn">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script>
     const API_BASE = "https://job-application.jamie-def.workers.dev";
+    const SITES_API_BASE = "https://mostlane-sites.jamie-def.workers.dev";
+
+    const SITE_CATEGORIES = [
+      "retail", "els", "els_private", "cobra", "projects", "wenzels", "fbc"
+    ];
 
     const els = {
       badge: document.getElementById("sessionBadge"),
@@ -412,8 +663,49 @@
       kpiTotal: document.getElementById("kpiTotal"),
       kpiOpen: document.getElementById("kpiOpen"),
       kpiOverdue: document.getElementById("kpiOverdue"),
-      kpiHolds: document.getElementById("kpiHolds")
+      kpiHolds: document.getElementById("kpiHolds"),
+
+      siteCategory: document.getElementById("siteCategory"),
+      siteSelect: document.getElementById("siteSelect"),
+      siteCode: document.getElementById("siteCode"),
+      siteName: document.getElementById("siteName"),
+      sitePostcode: document.getElementById("sitePostcode"),
+      contactTel: document.getElementById("contactTel"),
+      siteMileage: document.getElementById("siteMileage"),
+      siteTravelMins: document.getElementById("siteTravelMins"),
+      sharepointUrl: document.getElementById("sharepointUrl"),
+      siteLat: document.getElementById("siteLat"),
+      siteLon: document.getElementById("siteLon"),
+      projectNextNumber: document.getElementById("projectNextNumber"),
+      previewName: document.getElementById("previewName"),
+      previewMeta: document.getElementById("previewMeta"),
+
+      addSiteModal: document.getElementById("addSiteModal"),
+      openAddSiteModalBtn: document.getElementById("openAddSiteModalBtn"),
+      openAddSiteModalBtn2: document.getElementById("openAddSiteModalBtn2"),
+      closeAddSiteModalBtn: document.getElementById("closeAddSiteModalBtn"),
+      cancelAddSiteBtn: document.getElementById("cancelAddSiteBtn"),
+      addSiteNotice: document.getElementById("addSiteNotice"),
+      addSiteForm: document.getElementById("addSiteForm"),
+      addSiteCategory: document.getElementById("addSiteCategory"),
+      addSiteNumber: document.getElementById("addSiteNumber"),
+      addSiteName: document.getElementById("addSiteName"),
+      addSitePostcode: document.getElementById("addSitePostcode"),
+      addSitePhone: document.getElementById("addSitePhone"),
+      addSiteLat: document.getElementById("addSiteLat"),
+      addSiteLon: document.getElementById("addSiteLon"),
+      addSiteMileage: document.getElementById("addSiteMileage"),
+      addTravelMins: document.getElementById("addTravelMins"),
+      addSharepointUrl: document.getElementById("addSharepointUrl"),
+      addImageUrl: document.getElementById("addImageUrl"),
+      addSiteActive: document.getElementById("addSiteActive"),
+      addProjectNumberPreview: document.getElementById("addProjectNumberPreview"),
+      addProjectNumberWrap: document.getElementById("addProjectNumberWrap"),
+      addSiteNumberWrap: document.getElementById("addSiteNumberWrap")
     };
+
+    let SITES_BY_CATEGORY = {};
+    let CURRENT_SITE_LIST = [];
 
     function token() {
       return localStorage.getItem("mostlane_token") || "";
@@ -429,9 +721,40 @@
       els.notice.className = "notice";
     }
 
+    function showAddSiteNotice(text, cls="warn") {
+      els.addSiteNotice.textContent = text;
+      els.addSiteNotice.className = "notice show " + cls;
+    }
+
+    function clearAddSiteNotice() {
+      els.addSiteNotice.textContent = "";
+      els.addSiteNotice.className = "notice";
+    }
+
     function setBadge(text, cls="warn") {
       els.badge.textContent = text;
       els.badge.className = "pill " + cls;
+    }
+
+    function categoryLabel(v) {
+      const map = {
+        retail: "Retail",
+        els: "ELS",
+        els_private: "ELS Private",
+        cobra: "Cobra",
+        projects: "Projects",
+        wenzels: "Wenzels",
+        fbc: "Fareham Borough Council"
+      };
+      return map[v] || v || "";
+    }
+
+    function getSiteCode(site) {
+      return site.siteNumber || site["Branch Code"] || site.branchCode || site.Code || site.jobNumber || "";
+    }
+
+    function getSitePhone(site) {
+      return site.telephone || site.phone || site.managerPhone || site.areaManagerPhone || "";
     }
 
     async function api(path, options = {}) {
@@ -458,6 +781,15 @@
         throw new Error(data.error || "Request failed");
       }
 
+      return data;
+    }
+
+    async function sitesApi(path, options = {}) {
+      const res = await fetch(SITES_API_BASE + path, options);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "Sites request failed");
+      }
       return data;
     }
 
@@ -515,10 +847,7 @@
         if (engineer) params.set("engineer", engineer);
         if (scheduledDate) params.set("scheduledDate", scheduledDate);
         if (overdue) params.set("overdue", "true");
-
-        if (search) {
-          params.set("siteName", search);
-        }
+        if (search) params.set("siteName", search);
 
         const data = await api("/api/jobs?" + params.toString());
         const rows = data.rows || [];
@@ -531,12 +860,12 @@
         els.jobsBody.innerHTML = rows.map(job => `
           <tr>
             <td>${escapeHtml(job.id || "")}</td>
-            <td>${escapeHtml(job.helpdesk_ref || "")}</td>
-            <td>${escapeHtml(job.site_code || "")}<br><span class="muted">${escapeHtml(job.site_name || "")}</span></td>
-            <td>${escapeHtml(job.current_status || "")}</td>
+            <td>${escapeHtml(job.helpdesk_ref || job.helpdeskRef || "")}</td>
+            <td>${escapeHtml(job.site_code || job.siteCode || "")}<br><span class="muted">${escapeHtml(job.site_name || job.siteName || "")}</span></td>
+            <td>${escapeHtml(job.current_status || job.currentStatus || "")}</td>
             <td>${escapeHtml(job.priority || "")}</td>
             <td>${escapeHtml(job.engineers || "")}</td>
-            <td>${formatDate(job.updated_at)}</td>
+            <td>${formatDate(job.updated_at || job.updatedAt)}</td>
             <td><a class="btn" href="./job-view.html?id=${encodeURIComponent(job.id || "")}">Open</a></td>
           </tr>
         `).join("");
@@ -567,19 +896,100 @@
       }
     }
 
-    async function loadMasterData() {
+    async function loadPortalEngineers() {
       try {
-        const [sites, clients, engineers] = await Promise.all([
-          api("/api/sites"),
-          api("/api/clients"),
-          api("/api/engineers")
-        ]);
-
-        renderSimpleList(els.sitesBox, sites.rows || [], row => `${row.site_code || ""} · ${row.site_name || ""}`);
-        renderSimpleList(els.clientsBox, clients.rows || [], row => `${row.client_name || ""}`);
-        renderSimpleList(els.engineersBox, engineers.rows || [], row => `${row.engineer_name || ""}`);
+        const engineers = await api("/api/engineers");
+        renderSimpleList(els.engineersBox, engineers.rows || [], row => `${row.engineer_name || row.engineerName || ""}`);
       } catch (err) {
-        showNotice("Could not load master data: " + err.message, "bad");
+        els.engineersBox.innerHTML = `<div class="list-item muted">Could not load engineers.</div>`;
+      }
+    }
+
+    async function loadSitesCategory(category) {
+      const data = await sitesApi("/get-sites?category=" + encodeURIComponent(category));
+      SITES_BY_CATEGORY[category] = Array.isArray(data) ? data : [];
+      return SITES_BY_CATEGORY[category];
+    }
+
+    async function loadSitesForSelect(category) {
+      if (!category) {
+        els.siteSelect.innerHTML = `<option value="">Choose category first</option>`;
+        CURRENT_SITE_LIST = [];
+        return;
+      }
+
+      els.siteSelect.innerHTML = `<option value="">Loading sites...</option>`;
+      const list = await loadSitesCategory(category);
+      CURRENT_SITE_LIST = list;
+
+      if (!list.length) {
+        els.siteSelect.innerHTML = `<option value="">No sites in this category</option>`;
+        return;
+      }
+
+      els.siteSelect.innerHTML =
+        `<option value="">Select site</option>` +
+        list.map((site, idx) => {
+          const code = escapeHtml(getSiteCode(site) || "");
+          const name = escapeHtml(site.siteName || "");
+          return `<option value="${idx}">${code} · ${name}</option>`;
+        }).join("");
+    }
+
+    async function loadProjectNextNumber() {
+      try {
+        const data = await sitesApi("/next-project-job-number");
+        els.projectNextNumber.value = data.next || "";
+      } catch {
+        els.projectNextNumber.value = "";
+      }
+    }
+
+    function applySiteToForm(site) {
+      if (!site) return;
+
+      const code = getSiteCode(site);
+      const phone = getSitePhone(site);
+
+      els.siteCode.value = code || "";
+      els.siteName.value = site.siteName || "";
+      els.sitePostcode.value = (site.postcode || "").replace(/\*+$/g, "");
+      els.contactTel.value = phone || "";
+      els.siteMileage.value = site.mileageFromHQ ?? "";
+      els.siteTravelMins.value = site.travelTimeFromHQMinutes ?? "";
+      els.sharepointUrl.value = site.sharepointURL || "";
+      els.siteLat.value = site.lat ?? "";
+      els.siteLon.value = site.lon ?? "";
+
+      els.previewName.textContent = `${site.siteName || "Unknown Site"} (${code || "-"})`;
+      els.previewMeta.textContent =
+        `${categoryLabel(site.client || els.siteCategory.value)} · ${site.postcode || "No postcode"} · ${phone || "No phone"} · ${site.mileageFromHQ ?? "No mileage"} mi`;
+    }
+
+    function clearSitePreview() {
+      els.previewName.textContent = "No site selected";
+      els.previewMeta.textContent = "Select a category and site to prefill details.";
+    }
+
+    async function loadSitesMasterData() {
+      try {
+        const catsToShow = ["retail", "els", "projects", "fbc"];
+        const results = await Promise.all(catsToShow.map(loadSitesCategory));
+        const flatSites = results.flat();
+
+        renderSimpleList(
+          els.sitesBox,
+          flatSites.slice(0, 10),
+          row => `${getSiteCode(row) || "-"} · ${row.siteName || "-"}`
+        );
+
+        renderSimpleList(
+          els.clientsBox,
+          SITE_CATEGORIES.map(v => ({ name: categoryLabel(v) })),
+          row => row.name
+        );
+      } catch (err) {
+        showNotice("Could not load sites worker data: " + err.message, "bad");
       }
     }
 
@@ -588,24 +998,95 @@
         container.innerHTML = `<div class="list-item muted">No records.</div>`;
         return;
       }
-      container.innerHTML = rows.slice(0, 8).map(row => `
+      container.innerHTML = rows.slice(0, 10).map(row => `
         <div class="list-item">${escapeHtml(mapper(row))}</div>
       `).join("");
     }
+
+    function updateAddSiteProjectMode() {
+      const isProject = els.addSiteCategory.value === "projects";
+      els.addProjectNumberWrap.style.display = isProject ? "block" : "none";
+      els.addSiteNumberWrap.style.display = isProject ? "none" : "block";
+
+      if (isProject) {
+        els.addProjectNumberPreview.value = "Loading...";
+        loadNextProjectNumberIntoModal();
+      } else {
+        els.addProjectNumberPreview.value = "";
+      }
+    }
+
+    async function loadNextProjectNumberIntoModal() {
+      try {
+        const data = await sitesApi("/next-project-job-number");
+        els.addProjectNumberPreview.value = data.next || "(auto on save)";
+      } catch {
+        els.addProjectNumberPreview.value = "(auto on save)";
+      }
+    }
+
+    function openAddSiteModal(prefillCategory = "") {
+      clearAddSiteNotice();
+      els.addSiteForm.reset();
+      els.addSiteCategory.value = prefillCategory || els.siteCategory.value || "retail";
+      els.addSiteActive.value = "true";
+      updateAddSiteProjectMode();
+      els.addSiteModal.classList.add("active");
+    }
+
+    function closeAddSiteModal() {
+      els.addSiteModal.classList.remove("active");
+    }
+
+    els.siteCategory.addEventListener("change", async () => {
+      clearSitePreview();
+      await loadSitesForSelect(els.siteCategory.value);
+      if (els.siteCategory.value === "projects") {
+        await loadProjectNextNumber();
+      } else {
+        els.projectNextNumber.value = "";
+      }
+    });
+
+    els.siteSelect.addEventListener("change", () => {
+      const idx = els.siteSelect.value;
+      if (idx === "") {
+        clearSitePreview();
+        return;
+      }
+      const site = CURRENT_SITE_LIST[Number(idx)];
+      applySiteToForm(site);
+    });
 
     els.createJobForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearNotice();
 
       try {
+        const selectedSite =
+          els.siteSelect.value !== "" ? CURRENT_SITE_LIST[Number(els.siteSelect.value)] : null;
+
         const body = {
           helpdeskRef: document.getElementById("helpdeskRef").value.trim(),
-          siteCode: document.getElementById("siteCode").value.trim(),
-          siteName: document.getElementById("siteName").value.trim(),
+          category: els.siteCategory.value,
+          siteCode: els.siteCode.value.trim(),
+          siteName: els.siteName.value.trim(),
+          postcode: els.sitePostcode.value.trim(),
+          contactTel: els.contactTel.value.trim(),
+          mileageFromHQ: els.siteMileage.value.trim(),
+          travelTimeFromHQMinutes: els.siteTravelMins.value.trim(),
+          sharepointURL: els.sharepointUrl.value.trim(),
+          lat: els.siteLat.value.trim(),
+          lon: els.siteLon.value.trim(),
           priority: document.getElementById("priority").value,
           currentStatus: document.getElementById("currentStatus").value,
-          description: document.getElementById("description").value.trim()
+          description: document.getElementById("description").value.trim(),
+          siteData: selectedSite || null
         };
+
+        if (!body.siteCode || !body.siteName) {
+          throw new Error("Site code and site name are required.");
+        }
 
         await api("/api/jobs", {
           method: "POST",
@@ -614,12 +1095,78 @@
 
         showNotice("Job created successfully.", "ok");
         els.createJobForm.reset();
+        els.siteSelect.innerHTML = `<option value="">Choose category first</option>`;
+        clearSitePreview();
+        els.projectNextNumber.value = "";
         document.getElementById("priority").value = "P4";
         document.getElementById("currentStatus").value = "Pending";
         await loadDashboard();
         await loadJobs();
       } catch (err) {
         showNotice("Could not create job: " + err.message, "bad");
+      }
+    });
+
+    els.addSiteForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAddSiteNotice();
+
+      try {
+        const category = els.addSiteCategory.value;
+        const isProject = category === "projects";
+
+        const payload = {
+          client: category,
+          active: els.addSiteActive.value === "true",
+          siteName: els.addSiteName.value.trim(),
+          postcode: els.addSitePostcode.value.trim().replace(/\*+$/g, ""),
+          telephone: els.addSitePhone.value.trim() || undefined,
+          lat: els.addSiteLat.value.trim() ? parseFloat(els.addSiteLat.value.trim()) : "",
+          lon: els.addSiteLon.value.trim() ? parseFloat(els.addSiteLon.value.trim()) : "",
+          mileageFromHQ: els.addSiteMileage.value.trim() ? parseFloat(els.addSiteMileage.value.trim()) : "",
+          travelTimeFromHQMinutes: els.addTravelMins.value.trim() ? parseInt(els.addTravelMins.value.trim(), 10) : "",
+          sharepointURL: els.addSharepointUrl.value.trim() || undefined,
+          imageURL: els.addImageUrl.value.trim() || undefined
+        };
+
+        if (!isProject) {
+          payload.siteNumber = els.addSiteNumber.value.trim();
+          if (!payload.siteNumber) throw new Error("Site number is required.");
+        }
+
+        if (!payload.siteName) throw new Error("Site name is required.");
+        if (!payload.postcode) throw new Error("Postcode is required.");
+
+        const result = await sitesApi("/add-site?category=" + encodeURIComponent(category), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        showAddSiteNotice(
+          isProject && result.jobNumber
+            ? `Site added. Project job number ${result.jobNumber} assigned.`
+            : "Site added successfully.",
+          "ok"
+        );
+
+        await loadSitesCategory(category);
+
+        if (els.siteCategory.value === category) {
+          await loadSitesForSelect(category);
+        }
+
+        await loadSitesMasterData();
+
+        if (isProject && els.siteCategory.value === "projects") {
+          await loadProjectNextNumber();
+        }
+
+        setTimeout(() => {
+          closeAddSiteModal();
+        }, 700);
+      } catch (err) {
+        showAddSiteNotice("Could not add site: " + err.message, "bad");
       }
     });
 
@@ -635,6 +1182,16 @@
       } catch {}
       localStorage.removeItem("mostlane_token");
       window.location.href = "./login.html";
+    });
+
+    els.openAddSiteModalBtn.addEventListener("click", () => openAddSiteModal());
+    els.openAddSiteModalBtn2.addEventListener("click", () => openAddSiteModal());
+    els.closeAddSiteModalBtn.addEventListener("click", closeAddSiteModal);
+    els.cancelAddSiteBtn.addEventListener("click", closeAddSiteModal);
+    els.addSiteCategory.addEventListener("change", updateAddSiteProjectMode);
+
+    els.addSiteModal.addEventListener("click", (e) => {
+      if (e.target === els.addSiteModal) closeAddSiteModal();
     });
 
     function formatDate(iso) {
@@ -667,7 +1224,8 @@
         loadDashboard(),
         loadJobs(),
         loadApprovals(),
-        loadMasterData()
+        loadPortalEngineers(),
+        loadSitesMasterData()
       ]);
     })();
   </script>
