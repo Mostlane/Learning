@@ -1,11 +1,675 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin</title><link rel="stylesheet" href="../css/theme.css"/></head>
-<body><main class="page"><header class="page-header"><div><div class="brand">Operations Admin</div><h1 style="margin:.2rem 0">Dashboard & Job Control</h1></div><div class="row"><span class="badge" data-session-status></span><button id="logout" class="btn btn-secondary">Logout</button></div></header>
-<div id="admin-notice" class="notice hidden" style="margin-top:10px"></div>
-<section class="grid cols-3" style="margin-top:12px" id="kpis"></section>
-<section class="grid cols-2" style="margin-top:12px">
-<article class="card"><h3>Create Job</h3><form id="create-job" class="grid"><input class="input" name="title" placeholder="Job title" required/><input class="input" name="helpdeskRef" placeholder="Helpdesk ref" required/><input class="input" name="siteCode" placeholder="Site code" required/><select class="select" name="priority"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select><button class="btn btn-primary" type="submit">Create Job</button></form></article>
-<article class="card"><h3>Filters</h3><form id="job-filter" class="grid"><input class="input" name="search" placeholder="Job/helpdesk/site"/><select class="select" name="status"><option value="">Any status</option><option>Pending</option><option>Scheduled</option><option>Travelling</option><option>On Site</option><option>In Progress</option><option>Awaiting Hold Approval</option><option>On Hold</option><option>Complete</option></select><button class="btn btn-secondary" type="submit">Load Jobs</button></form></article>
-</section>
-<section class="card" style="margin-top:12px"><div class="row spread"><h3>Jobs</h3><a class="btn btn-secondary" href="scheduler.html">Scheduler</a></div><div class="table-wrap"><table class="table"><thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Priority</th><th>Site</th><th>Engineer(s)</th><th></th></tr></thead><tbody id="jobs-body"></tbody></table></div></section>
-<section class="grid cols-2" style="margin-top:12px"><article class="card"><h3>Hold Approvals</h3><div id="hold-queue" class="grid"></div></article><article class="card"><h3>Office View As</h3><form id="view-as-form" class="row"><input class="input" name="targetUserId" placeholder="Engineer user ID"/><button class="btn btn-secondary" type="submit">View As</button><button class="btn btn-danger" id="clear-view-as" type="button">Clear</button></form></article></section>
-</main><script type="module" src="../js/pages/admin.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Mostlane • Admin Portal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    :root{
+      --ml-blue:#003b82;
+      --ml-blue-light:#1e66ff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --ok:#16a34a;
+      --warn:#f97316;
+      --bad:#dc2626;
+      --panel:rgba(255,255,255,0.92);
+      --border:#d1d5db;
+      --bg:#e6e8eb;
+    }
+    html,body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+    .shell{
+      max-width:1200px;
+      margin:24px auto;
+      padding:0 16px;
+    }
+    .card{
+      background:var(--panel);
+      border-radius:16px;
+      box-shadow:0 12px 28px rgba(0,0,0,0.12);
+      overflow:hidden;
+      border:1px solid rgba(209,213,219,0.65);
+    }
+    header{
+      padding:16px 20px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(90deg,#fff,#f7f9fc);
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    h1,h2,h3{margin:0}
+    h1{font-size:24px;color:var(--ml-blue);}
+    h2{font-size:18px;color:var(--ml-blue);}
+    h3{font-size:15px;}
+    .muted{color:var(--muted);font-size:13px;}
+    .content{padding:18px 20px;}
+    .btn{
+      border-radius:999px;
+      border:1px solid #cbd5e1;
+      padding:9px 14px;
+      font-size:14px;
+      font-weight:700;
+      cursor:pointer;
+      background:#fff;
+      color:var(--text);
+    }
+    .btn.primary{
+      background:var(--ml-blue-light);
+      color:#fff;
+      border-color:var(--ml-blue-light);
+    }
+    .btn.danger{
+      background:#fff5f5;
+      border-color:#fecaca;
+      color:#b91c1c;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      background:#eff6ff;
+      color:#1d4ed8;
+    }
+    .pill.ok{background:#ecfdf3;color:#166534;}
+    .pill.warn{background:#fffbeb;color:#92400e;}
+    .pill.bad{background:#fef2f2;color:#b91c1c;}
+    .grid{
+      display:grid;
+      gap:16px;
+    }
+    .grid-2{grid-template-columns:1fr 1fr;}
+    .grid-3{grid-template-columns:repeat(3,1fr);}
+    .grid-4{grid-template-columns:repeat(4,1fr);}
+    @media(max-width:900px){
+      .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}
+    }
+    .stat{
+      padding:16px;
+    }
+    .stat .n{
+      font-size:28px;
+      font-weight:800;
+      color:var(--ml-blue);
+      margin-top:6px;
+    }
+    .field-group{margin-bottom:12px;}
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:5px;
+    }
+    select,input,textarea{
+      width:100%;
+      box-sizing:border-box;
+      border-radius:10px;
+      border:1px solid #cbd5e1;
+      padding:10px 12px;
+      font-size:14px;
+      background:#fff;
+    }
+    textarea{min-height:90px;resize:vertical;}
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .table-wrap{overflow:auto;}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+    }
+    th,td{
+      text-align:left;
+      padding:10px 8px;
+      border-bottom:1px solid #e5e7eb;
+      font-size:14px;
+      vertical-align:top;
+    }
+    th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+    .notice{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      display:none;
+    }
+    .notice.show{display:block;}
+    .notice.ok{background:#ecfdf3;color:#166534;}
+    .notice.bad{background:#fef2f2;color:#b91c1c;}
+    .notice.warn{background:#fffbeb;color:#92400e;}
+    .section-title{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .list{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .list-item{
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      padding:12px;
+      background:#fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <header>
+        <div>
+          <div class="muted">Mostlane / Admin Portal</div>
+          <h1>Dashboard & Job Control</h1>
+        </div>
+        <div class="row">
+          <span id="sessionBadge" class="pill warn">Checking session...</span>
+          <a class="btn" href="./scheduler.html">Scheduler</a>
+          <a class="btn" href="./financial.html">Financial</a>
+          <a class="btn" href="./off-view.html">Off View</a>
+          <button id="logoutBtn" class="btn danger">Logout</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <div id="pageNotice" class="notice"></div>
+
+        <div class="grid grid-4">
+          <div class="card stat">
+            <div class="muted">Total Jobs</div>
+            <div class="n" id="kpiTotal">0</div>
+          </div>
+          <div class="card stat">
+            <div class="muted">Open Jobs</div>
+            <div class="n" id="kpiOpen">0</div>
+          </div>
+          <div class="card stat">
+            <div class="muted">Overdue Jobs</div>
+            <div class="n" id="kpiOverdue">0</div>
+          </div>
+          <div class="card stat">
+            <div class="muted">Pending Holds</div>
+            <div class="n" id="kpiHolds">0</div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="content">
+              <div class="section-title">
+                <h2>Create Job</h2>
+              </div>
+
+              <form id="createJobForm">
+                <div class="field-group">
+                  <label for="helpdeskRef">Helpdesk Ref</label>
+                  <input id="helpdeskRef" required />
+                </div>
+
+                <div class="field-group">
+                  <label for="siteCode">Site Code</label>
+                  <input id="siteCode" required />
+                </div>
+
+                <div class="field-group">
+                  <label for="siteName">Site Name</label>
+                  <input id="siteName" required />
+                </div>
+
+                <div class="field-group">
+                  <label for="priority">Priority</label>
+                  <select id="priority">
+                    <option value="P1">P1</option>
+                    <option value="P2">P2</option>
+                    <option value="P3">P3</option>
+                    <option value="P4" selected>P4</option>
+                    <option value="P5">P5</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="currentStatus">Status</label>
+                  <select id="currentStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Travelling">Travelling</option>
+                    <option value="On Site">On Site</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Hold Requested">Hold Requested</option>
+                    <option value="Awaiting Hold Approval">Awaiting Hold Approval</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Hold Rejected">Hold Rejected</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="description">Description</label>
+                  <textarea id="description"></textarea>
+                </div>
+
+                <div class="row">
+                  <button class="btn primary" type="submit">Create Job</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="content">
+              <div class="section-title">
+                <h2>Filters</h2>
+              </div>
+
+              <form id="filterForm">
+                <div class="field-group">
+                  <label for="filterSearch">Search by Job ID / Ref / Site</label>
+                  <input id="filterSearch" />
+                </div>
+
+                <div class="field-group">
+                  <label for="filterStatus">Status</label>
+                  <select id="filterStatus">
+                    <option value="">Any status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Travelling">Travelling</option>
+                    <option value="On Site">On Site</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Awaiting Hold Approval">Awaiting Hold Approval</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label for="filterEngineer">Engineer</label>
+                  <input id="filterEngineer" />
+                </div>
+
+                <div class="field-group">
+                  <label for="filterDate">Scheduled Date</label>
+                  <input id="filterDate" type="date" />
+                </div>
+
+                <div class="row">
+                  <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+                    <input id="filterOverdue" type="checkbox" style="width:auto;" />
+                    Overdue only
+                  </label>
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                  <button class="btn" type="submit">Load Jobs</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="content">
+            <div class="section-title">
+              <h2>Jobs</h2>
+              <a class="btn" href="./scheduler.html">Open Scheduler</a>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Helpdesk Ref</th>
+                    <th>Site</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Engineers</th>
+                    <th>Updated</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="jobsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:16px;">
+          <div class="card">
+            <div class="content">
+              <div class="section-title">
+                <h2>Hold Approvals</h2>
+              </div>
+              <div id="holdQueue" class="list"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="content">
+              <div class="section-title">
+                <h2>Master Data</h2>
+              </div>
+
+              <div class="grid grid-3">
+                <div>
+                  <h3>Sites</h3>
+                  <div id="sitesBox" class="list"></div>
+                </div>
+                <div>
+                  <h3>Clients</h3>
+                  <div id="clientsBox" class="list"></div>
+                </div>
+                <div>
+                  <h3>Engineers</h3>
+                  <div id="engineersBox" class="list"></div>
+                </div>
+              </div>
+
+              <div class="notice show warn" style="margin-top:16px;">
+                User management is not in your current Worker yet. Once we add <strong>/api/users</strong> and <strong>/api/roles</strong>, this admin page can manage office and engineer accounts too.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "https://job-application.jamie-def.workers.dev";
+
+    const els = {
+      badge: document.getElementById("sessionBadge"),
+      notice: document.getElementById("pageNotice"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      createJobForm: document.getElementById("createJobForm"),
+      filterForm: document.getElementById("filterForm"),
+      jobsBody: document.getElementById("jobsBody"),
+      holdQueue: document.getElementById("holdQueue"),
+      sitesBox: document.getElementById("sitesBox"),
+      clientsBox: document.getElementById("clientsBox"),
+      engineersBox: document.getElementById("engineersBox"),
+      kpiTotal: document.getElementById("kpiTotal"),
+      kpiOpen: document.getElementById("kpiOpen"),
+      kpiOverdue: document.getElementById("kpiOverdue"),
+      kpiHolds: document.getElementById("kpiHolds")
+    };
+
+    function token() {
+      return localStorage.getItem("mostlane_token") || "";
+    }
+
+    function showNotice(text, cls="warn") {
+      els.notice.textContent = text;
+      els.notice.className = "notice show " + cls;
+    }
+
+    function clearNotice() {
+      els.notice.textContent = "";
+      els.notice.className = "notice";
+    }
+
+    function setBadge(text, cls="warn") {
+      els.badge.textContent = text;
+      els.badge.className = "pill " + cls;
+    }
+
+    async function api(path, options = {}) {
+      const headers = {
+        ...(options.headers || {})
+      };
+
+      if (!(options.body instanceof FormData)) {
+        headers["Content-Type"] = headers["Content-Type"] || "application/json";
+      }
+
+      if (token()) {
+        headers["Authorization"] = "Bearer " + token();
+      }
+
+      const res = await fetch(API_BASE + path, {
+        ...options,
+        headers
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+      }
+
+      return data;
+    }
+
+    async function ensureSession() {
+      try {
+        const data = await api("/auth/me", { method: "GET" });
+        if (!data.ok || !data.user) throw new Error("No session");
+
+        setBadge(`${data.user.role}`, "ok");
+
+        if (!["master", "office_admin", "office_standard"].includes(data.user.role)) {
+          showNotice("You do not have permission to access the admin page.", "bad");
+          setTimeout(() => {
+            window.location.href = "./off-view.html";
+          }, 1200);
+          return false;
+        }
+
+        return true;
+      } catch (err) {
+        localStorage.removeItem("mostlane_token");
+        showNotice("Session expired. Please sign in again.", "bad");
+        setBadge("Not signed in", "bad");
+        setTimeout(() => {
+          window.location.href = "./login.html";
+        }, 1200);
+        return false;
+      }
+    }
+
+    async function loadDashboard() {
+      try {
+        const data = await api("/api/dashboard");
+        const counts = data.counts || {};
+        els.kpiTotal.textContent = counts.jobs_total ?? 0;
+        els.kpiOpen.textContent = counts.jobs_open ?? 0;
+        els.kpiOverdue.textContent = counts.jobs_overdue ?? 0;
+        els.kpiHolds.textContent = counts.holds_pending ?? 0;
+      } catch (err) {
+        showNotice("Could not load dashboard counts: " + err.message, "bad");
+      }
+    }
+
+    async function loadJobs() {
+      try {
+        const search = document.getElementById("filterSearch").value.trim();
+        const status = document.getElementById("filterStatus").value;
+        const engineer = document.getElementById("filterEngineer").value.trim();
+        const scheduledDate = document.getElementById("filterDate").value;
+        const overdue = document.getElementById("filterOverdue").checked;
+
+        const params = new URLSearchParams();
+
+        if (status) params.set("status", status);
+        if (engineer) params.set("engineer", engineer);
+        if (scheduledDate) params.set("scheduledDate", scheduledDate);
+        if (overdue) params.set("overdue", "true");
+
+        if (search) {
+          params.set("siteName", search);
+        }
+
+        const data = await api("/api/jobs?" + params.toString());
+        const rows = data.rows || [];
+
+        if (!rows.length) {
+          els.jobsBody.innerHTML = `<tr><td colspan="8" class="muted">No jobs found.</td></tr>`;
+          return;
+        }
+
+        els.jobsBody.innerHTML = rows.map(job => `
+          <tr>
+            <td>${escapeHtml(job.id || "")}</td>
+            <td>${escapeHtml(job.helpdesk_ref || "")}</td>
+            <td>${escapeHtml(job.site_code || "")}<br><span class="muted">${escapeHtml(job.site_name || "")}</span></td>
+            <td>${escapeHtml(job.current_status || "")}</td>
+            <td>${escapeHtml(job.priority || "")}</td>
+            <td>${escapeHtml(job.engineers || "")}</td>
+            <td>${formatDate(job.updated_at)}</td>
+            <td><a class="btn" href="./job-view.html?id=${encodeURIComponent(job.id || "")}">Open</a></td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        showNotice("Could not load jobs: " + err.message, "bad");
+      }
+    }
+
+    async function loadApprovals() {
+      try {
+        const data = await api("/api/approvals");
+        const rows = data.rows || [];
+
+        if (!rows.length) {
+          els.holdQueue.innerHTML = `<div class="list-item muted">No hold approvals pending.</div>`;
+          return;
+        }
+
+        els.holdQueue.innerHTML = rows.map(item => `
+          <div class="list-item">
+            <strong>${escapeHtml(item.jobId || item.id || "Hold Request")}</strong>
+            <div class="muted" style="margin-top:6px;">${escapeHtml(item.engineer || "")}</div>
+            <div class="muted">${escapeHtml(item.requested_reason || "")}</div>
+          </div>
+        `).join("");
+      } catch (err) {
+        els.holdQueue.innerHTML = `<div class="list-item muted">Could not load approvals.</div>`;
+      }
+    }
+
+    async function loadMasterData() {
+      try {
+        const [sites, clients, engineers] = await Promise.all([
+          api("/api/sites"),
+          api("/api/clients"),
+          api("/api/engineers")
+        ]);
+
+        renderSimpleList(els.sitesBox, sites.rows || [], row => `${row.site_code || ""} · ${row.site_name || ""}`);
+        renderSimpleList(els.clientsBox, clients.rows || [], row => `${row.client_name || ""}`);
+        renderSimpleList(els.engineersBox, engineers.rows || [], row => `${row.engineer_name || ""}`);
+      } catch (err) {
+        showNotice("Could not load master data: " + err.message, "bad");
+      }
+    }
+
+    function renderSimpleList(container, rows, mapper) {
+      if (!rows.length) {
+        container.innerHTML = `<div class="list-item muted">No records.</div>`;
+        return;
+      }
+      container.innerHTML = rows.slice(0, 8).map(row => `
+        <div class="list-item">${escapeHtml(mapper(row))}</div>
+      `).join("");
+    }
+
+    els.createJobForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearNotice();
+
+      try {
+        const body = {
+          helpdeskRef: document.getElementById("helpdeskRef").value.trim(),
+          siteCode: document.getElementById("siteCode").value.trim(),
+          siteName: document.getElementById("siteName").value.trim(),
+          priority: document.getElementById("priority").value,
+          currentStatus: document.getElementById("currentStatus").value,
+          description: document.getElementById("description").value.trim()
+        };
+
+        await api("/api/jobs", {
+          method: "POST",
+          body: JSON.stringify(body)
+        });
+
+        showNotice("Job created successfully.", "ok");
+        els.createJobForm.reset();
+        document.getElementById("priority").value = "P4";
+        document.getElementById("currentStatus").value = "Pending";
+        await loadDashboard();
+        await loadJobs();
+      } catch (err) {
+        showNotice("Could not create job: " + err.message, "bad");
+      }
+    });
+
+    els.filterForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearNotice();
+      await loadJobs();
+    });
+
+    els.logoutBtn.addEventListener("click", async () => {
+      try {
+        await api("/auth/logout", { method: "POST" });
+      } catch {}
+      localStorage.removeItem("mostlane_token");
+      window.location.href = "./login.html";
+    });
+
+    function formatDate(iso) {
+      if (!iso) return "–";
+      const d = new Date(iso);
+      if (isNaN(d)) return "–";
+      return d.toLocaleString("en-GB", {
+        day:"2-digit",
+        month:"short",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      });
+    }
+
+    function escapeHtml(v) {
+      return String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    (async function init() {
+      const ok = await ensureSession();
+      if (!ok) return;
+
+      await Promise.all([
+        loadDashboard(),
+        loadJobs(),
+        loadApprovals(),
+        loadMasterData()
+      ]);
+    })();
+  </script>
+</body>
+</html>
