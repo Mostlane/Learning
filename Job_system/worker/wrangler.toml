@@ -1,0 +1,6 @@
+name = "job-system"
+main = "src/index.js"
+compatibility_date = "2026-03-10"
+
+[observability]
+enabled = true
