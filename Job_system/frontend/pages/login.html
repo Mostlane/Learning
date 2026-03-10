@@ -1,15 +1,330 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Cloudflare Job Portal | Login</title><link rel="stylesheet" href="../css/theme.css"/>
-</head><body><main class="page" style="max-width:680px">
-<header class="page-header"><div><div class="brand">Mostlane / Cloudflare Portal</div><h1 style="margin:.4rem 0">Secure Login</h1><p class="text-muted" style="margin:0">Master, office, and engineer login flow.</p></div><span class="badge" data-session-status>Checking...</span></header>
-<section class="card" style="margin-top:16px">
-<form id="login-form" class="grid">
-<div><label>Username</label><input class="input" id="username" required autocomplete="username"/></div>
-<div><label>Password</label><input class="input" id="password" type="password" required autocomplete="current-password"/></div>
-<div class="row"><button class="btn btn-primary" type="submit">Sign In</button></div>
-<div id="login-notice" class="notice hidden"></div>
-</form>
-<p class="text-muted">Initial master login is configured in backend seed data and should be changed after first sign-in.</p>
-</section>
-</main><script type="module" src="../js/pages/login.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Mostlane • Secure Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    :root{
+      --ml-blue:#003b82;
+      --ml-blue-light:#1e66ff;
+      --text:#0f172a;
+      --muted:#6b7280;
+      --ok:#16a34a;
+      --warn:#f97316;
+      --bad:#dc2626;
+      --panel:rgba(255,255,255,0.92);
+      --border:#d1d5db;
+      --bg:#e6e8eb;
+    }
+    html,body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      min-height:100%;
+    }
+    .shell{
+      max-width:720px;
+      margin:32px auto;
+      padding:0 16px;
+    }
+    .card{
+      background:var(--panel);
+      border-radius:16px;
+      box-shadow:0 12px 28px rgba(0,0,0,0.12);
+      overflow:hidden;
+      border:1px solid rgba(209,213,219,0.65);
+    }
+    .hero{
+      padding:20px 22px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(90deg,#fff,#f4f7fc);
+      display:flex;
+      gap:12px;
+      justify-content:space-between;
+      align-items:flex-start;
+    }
+    .brand{
+      font-size:14px;
+      color:var(--muted);
+      font-weight:600;
+      margin-bottom:8px;
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.1;
+      color:var(--ml-blue);
+    }
+    .sub{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:15px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+      background:#e5e7eb;
+      color:#4b5563;
+    }
+    .badge.ok{ background:#ecfdf3; color:#166534; }
+    .badge.warn{ background:#fffbeb; color:#92400e; }
+    .badge.bad{ background:#fef2f2; color:#b91c1c; }
+
+    .content{
+      padding:22px;
+    }
+    .field-group{
+      margin-bottom:14px;
+    }
+    label{
+      display:block;
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+    input{
+      width:100%;
+      box-sizing:border-box;
+      border-radius:12px;
+      border:1px solid #cbd5e1;
+      padding:12px 14px;
+      font-size:16px;
+      background:#fff;
+    }
+    input:focus{
+      outline:none;
+      border-color:var(--ml-blue-light);
+      box-shadow:0 0 0 3px rgba(30,102,255,0.12);
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border-radius:999px;
+      border:1px solid #cbd5e1;
+      padding:11px 18px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      background:#fff;
+      color:var(--text);
+    }
+    .btn.primary{
+      background:var(--ml-blue-light);
+      color:#fff;
+      border-color:var(--ml-blue-light);
+    }
+    .btn:disabled{
+      opacity:.65;
+      cursor:not-allowed;
+    }
+    .notice{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      display:none;
+    }
+    .notice.show{ display:block; }
+    .notice.ok{ background:#ecfdf3; color:#166534; }
+    .notice.bad{ background:#fef2f2; color:#b91c1c; }
+    .notice.warn{ background:#fffbeb; color:#92400e; }
+
+    .muted{
+      color:var(--muted);
+      font-size:14px;
+      margin-top:16px;
+      line-height:1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="hero">
+        <div>
+          <div class="brand">Mostlane / Cloudflare Portal</div>
+          <h1>Secure Login</h1>
+          <div class="sub">Master, office, and engineer login flow.</div>
+        </div>
+        <span id="sessionBadge" class="badge warn">Checking...</span>
+      </div>
+
+      <div class="content">
+        <form id="loginForm">
+          <div class="field-group">
+            <label for="username">Username</label>
+            <input id="username" name="username" autocomplete="username" required />
+          </div>
+
+          <div class="field-group">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+
+          <div class="row">
+            <button id="loginBtn" class="btn primary" type="submit">Sign In</button>
+          </div>
+
+          <div id="notice" class="notice"></div>
+        </form>
+
+        <div class="muted">
+          Initial master login is checked by the Worker backend against your Cloudflare-saved secrets.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "https://job-application.jamie-def.workers.dev";
+
+    const els = {
+      form: document.getElementById("loginForm"),
+      username: document.getElementById("username"),
+      password: document.getElementById("password"),
+      loginBtn: document.getElementById("loginBtn"),
+      badge: document.getElementById("sessionBadge"),
+      notice: document.getElementById("notice")
+    };
+
+    function setBadge(text, cls) {
+      els.badge.textContent = text;
+      els.badge.className = "badge " + (cls || "");
+    }
+
+    function showNotice(text, cls) {
+      els.notice.textContent = text;
+      els.notice.className = "notice show " + (cls || "");
+    }
+
+    function hideNotice() {
+      els.notice.textContent = "";
+      els.notice.className = "notice";
+    }
+
+    function setBusy(busy) {
+      els.loginBtn.disabled = busy;
+      els.loginBtn.textContent = busy ? "Signing in..." : "Sign In";
+    }
+
+    function getToken() {
+      return localStorage.getItem("mostlane_token") || "";
+    }
+
+    function saveToken(token) {
+      localStorage.setItem("mostlane_token", token);
+    }
+
+    function clearToken() {
+      localStorage.removeItem("mostlane_token");
+    }
+
+    async function api(path, options = {}) {
+      const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+
+      const token = getToken();
+      if (token) {
+        headers.Authorization = "Bearer " + token;
+      }
+
+      const response = await fetch(API_BASE + path, {
+        ...options,
+        headers
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || ("Request failed: " + response.status));
+      }
+
+      return data;
+    }
+
+    async function checkSession() {
+      const token = getToken();
+      if (!token) {
+        setBadge("Not signed in", "warn");
+        return;
+      }
+
+      try {
+        const data = await api("/auth/me", { method: "GET" });
+        if (data.ok && data.user) {
+          setBadge(data.user.role || "Signed in", "ok");
+          showNotice("Already signed in as " + data.user.username + ".", "ok");
+        } else {
+          clearToken();
+          setBadge("Not signed in", "warn");
+        }
+      } catch (err) {
+        clearToken();
+        setBadge("Not signed in", "warn");
+      }
+    }
+
+    els.form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      hideNotice();
+      setBusy(true);
+
+      try {
+        const username = els.username.value.trim();
+        const password = els.password.value;
+
+        const data = await fetch(API_BASE + "/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username, password })
+        }).then(async (res) => {
+          const json = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(json.error || "Login failed.");
+          }
+          return json;
+        });
+
+        if (!data.ok || !data.token) {
+          throw new Error(data.error || "Login failed.");
+        }
+
+        saveToken(data.token);
+        setBadge("Signed in", "ok");
+        showNotice("Login successful. Redirecting...", "ok");
+
+        const role = data.user?.role || "";
+        if (role === "master" || role === "office_admin" || role === "office_standard") {
+          window.location.href = "./admin.html";
+          return;
+        }
+
+        window.location.href = "./off-view.html";
+      } catch (err) {
+        clearToken();
+        setBadge("Not signed in", "bad");
+        showNotice(err.message || "Login failed.", "bad");
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    checkSession();
+  </script>
+</body>
+</html>
