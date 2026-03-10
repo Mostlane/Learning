@@ -1,43 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job System</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-  </head>
-  <body>
-    <main class="page">
-      <header class="page-header">
-        <div>
-          <h1 data-page-title style="margin:0;font-size:1.2rem"></h1>
-          <p class="text-muted" style="margin:6px 0 0">Cloudflare internal engineering portal scaffold.</p>
-        </div>
-        <span class="badge" data-session-status>Checking session...</span>
-      </header>
-
-      <section class="grid cols-2" style="margin-top:18px;">
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Stage 1 scaffold</h2>
-          <p class="text-muted">This page is wired to shared theme styles, shared API helper, and the live Worker URL.</p>
-          <button class="btn btn-primary" type="button">Primary Action</button>
-          <button class="btn btn-secondary" type="button">Secondary Action</button>
-        </article>
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Timeline style preview</h2>
-          <ul class="timeline">
-            <li><strong>Job raised</strong><div class="text-muted">Awaiting next stages.</div></li>
-            <li><strong>Scaffold created</strong><div class="text-muted">Shared design language active.</div></li>
-          </ul>
-        </article>
-      </section>
-    </main>
-
-    <script type="module" src="../js/main.js"></script>
-    <script>
-      const fileName = location.pathname.split('/').pop() || 'page';
-      document.querySelector('[data-page-title]').textContent = fileName;
-      document.title = `Job System | ${fileName}`;
-    </script>
-  </body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Job View</title><link rel="stylesheet" href="../css/theme.css"/></head>
+<body><main class="page"><header class="page-header"><div><div class="brand">Job Detail</div><h1 id="job-title" style="margin:.2rem 0">Loading...</h1><p id="job-meta" class="text-muted" style="margin:0"></p></div><div class="row"><span class="badge" data-session-status></span><a class="btn btn-secondary" href="admin.html">Back</a></div></header>
+<div id="job-notice" class="notice hidden" style="margin-top:10px"></div>
+<section class="grid cols-2" style="margin-top:12px">
+<article class="card"><h3>Workflow Actions</h3><form id="status-form" class="grid"><select class="select" name="status"><option>Scheduled</option><option>Travelling</option><option>On Site</option><option>In Progress</option><option>Complete</option></select><input class="input" name="note" placeholder="Status note"/><button class="btn btn-primary" type="submit">Update Status</button></form><hr/><form id="hold-form" class="grid"><label>Request hold</label><textarea class="textarea" name="reason" required></textarea><button class="btn btn-secondary" type="submit">Request Hold</button></form><hr/><form id="complete-form" class="grid"><textarea class="textarea" name="completionNotes" placeholder="Completion notes" required></textarea><input class="input" name="signature" placeholder="Customer signature name" required/><input class="input" name="noMaterialsConfirm" placeholder="Type NO MATERIALS USED if none"/><button class="btn btn-primary" type="submit">Attempt Completion</button></form></article>
+<article class="card"><h3>Materials & Files</h3><form id="materials-form" class="grid"><input class="input" name="description" placeholder="Description"/><input class="input" name="quantity" type="number" min="1" placeholder="Qty"/><input class="input" name="unitCost" type="number" step="0.01" placeholder="Unit cost (optional)"/><input class="input" name="supplier" placeholder="Supplier (optional)"/><textarea class="textarea" name="notes" placeholder="Notes"></textarea><button class="btn btn-secondary" type="submit">Add Material</button></form><div class="table-wrap"><table class="table"><thead><tr><th>Description</th><th>Qty</th><th>Cost</th></tr></thead><tbody id="materials-body"></tbody></table></div><hr/><form id="file-form" class="grid"><label>Upload photo/signature/attachment</label><input class="input" name="file" type="file" required/><select class="select" name="kind"><option value="photo">Photo</option><option value="signature">Signature</option><option value="attachment">Attachment</option></select><button class="btn btn-secondary" type="submit">Upload File</button></form></article>
+</section>
+<section class="grid cols-2" style="margin-top:12px"><article class="card"><h3>Event History</h3><ul class="timeline" id="event-history"></ul></article><article class="card"><h3>Status History</h3><ul class="timeline" id="status-history"></ul></article></section>
+</main><script type="module" src="../js/pages/job-view.js"></script></body></html>

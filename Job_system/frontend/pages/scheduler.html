@@ -1,43 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Job System</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-  </head>
-  <body>
-    <main class="page">
-      <header class="page-header">
-        <div>
-          <h1 data-page-title style="margin:0;font-size:1.2rem"></h1>
-          <p class="text-muted" style="margin:6px 0 0">Cloudflare internal engineering portal scaffold.</p>
-        </div>
-        <span class="badge" data-session-status>Checking session...</span>
-      </header>
-
-      <section class="grid cols-2" style="margin-top:18px;">
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Stage 1 scaffold</h2>
-          <p class="text-muted">This page is wired to shared theme styles, shared API helper, and the live Worker URL.</p>
-          <button class="btn btn-primary" type="button">Primary Action</button>
-          <button class="btn btn-secondary" type="button">Secondary Action</button>
-        </article>
-        <article class="card">
-          <h2 style="margin-top:0;font-size:1rem">Timeline style preview</h2>
-          <ul class="timeline">
-            <li><strong>Job raised</strong><div class="text-muted">Awaiting next stages.</div></li>
-            <li><strong>Scaffold created</strong><div class="text-muted">Shared design language active.</div></li>
-          </ul>
-        </article>
-      </section>
-    </main>
-
-    <script type="module" src="../js/main.js"></script>
-    <script>
-      const fileName = location.pathname.split('/').pop() || 'page';
-      document.querySelector('[data-page-title]').textContent = fileName;
-      document.title = `Job System | ${fileName}`;
-    </script>
-  </body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Scheduler</title><link rel="stylesheet" href="../css/theme.css"/></head>
+<body><main class="page"><header class="page-header"><div><div class="brand">Daily Scheduler</div><h1 style="margin:.2rem 0">Drag & Drop Planner</h1></div><div class="row"><input id="sched-date" class="input" type="date" style="width:auto"/><span class="badge" data-session-status></span><a class="btn btn-secondary" href="admin.html">Back</a></div></header>
+<div id="scheduler-notice" class="notice hidden" style="margin-top:10px"></div>
+<section class="grid cols-2" style="margin-top:12px"><article class="card"><h3>Unscheduled Jobs</h3><div id="unscheduled" class="lane"></div></article><article class="card"><h3>Engineer Lanes</h3><div id="lanes" class="grid"></div></article></section>
+</main><script type="module" src="../js/pages/scheduler.js"></script></body></html>
