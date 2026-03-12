@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Timesheet & Invoice (Cloudflare Sync)</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #0f766e;
+      --border: #d1d5db;
+      --danger: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--text); line-height: 1.45; }
+    .container { max-width: 1024px; margin: 0 auto; padding: 1.25rem; }
+    .page-title { margin: 0 0 0.5rem; font-size: 1.75rem; }
+    .page-subtitle { margin-top: 0; color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04); }
+    .grid { display: grid; gap: 0.85rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    label { display: block; font-size: 0.9rem; margin-bottom: 0.35rem; color: #374151; font-weight: 600; }
+    input, textarea, button { font: inherit; }
+    input[type="text"], input[type="email"], input[type="number"], input[type="week"], input[type="url"], input[type="password"], textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 0.55rem 0.65rem; background: #fff;
+    }
+    textarea { min-height: 90px; }
+    .checkbox-row { margin-top: 0.35rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: #374151; }
+    .button-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    button { border: none; border-radius: 8px; cursor: pointer; padding: 0.6rem 0.9rem; background: var(--primary); color: white; font-weight: 600; }
+    button:hover { background: var(--primary-dark); }
+    .button-secondary { background: #374151; }
+    .button-secondary:hover { background: #1f2937; }
+    .button-success { background: var(--success); }
+    .button-success:hover { background: #0d5e58; }
+    .status { min-height: 1.2rem; margin-top: 0.65rem; font-weight: 600; }
+    .status.error { color: var(--danger); }
+    .status.success { color: var(--success); }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.4rem; }
+    th, td { text-align: left; border-bottom: 1px solid var(--border); padding: 0.55rem 0.35rem; vertical-align: top; }
+    th { color: #374151; }
+    .right { text-align: right; }
+    .muted { color: var(--muted); font-size: 0.88rem; }
+    #invoicePreview { background: #fff; border: 1px dashed #9ca3af; border-radius: 8px; padding: 1rem; margin-top: 0.8rem; display: none; }
+    #savedTimesheets li { margin-bottom: 0.45rem; color: #374151; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="page-title">Weekly Timesheet</h1>
+    <p class="page-subtitle">Save locally, sync to Cloudflare Worker + KV, block duplicate weeks, and generate invoices.</p>
+
+    <section class="card">
+      <h2>Cloud Sync Settings</h2>
+      <div class="grid">
+        <div>
+          <label for="workerUrl">Worker Base URL</label>
+          <input id="workerUrl" type="url" placeholder="https://timesheets.example.workers.dev" />
+        </div>
+        <div>
+          <label for="workerApiKey">Worker API Key</label>
+          <input id="workerApiKey" type="password" placeholder="Optional if API_KEY is enforced" />
+        </div>
+      </div>
+      <div class="button-row">
+        <button id="saveCloudConfigBtn" type="button" class="button-secondary">Save Cloud Settings</button>
+        <button id="pushCloudBtn" type="button" class="button-success">Push Profile + Timesheets to Cloud</button>
+        <button id="pullCloudBtn" type="button" class="button-secondary">Pull Timesheets from Cloud</button>
+      </div>
+      <div class="muted">Cloud sync uses your Worker API endpoints and stores data in KV.</div>
+    </section>
+
+    <section class="card">
+      <h2>Employee Details</h2>
+      <div class="grid">
+        <div><label for="employeeName">Employee Name</label><input id="employeeName" type="text" placeholder="Jane Doe" /></div>
+        <div><label for="employeeId">Employee ID</label><input id="employeeId" type="text" placeholder="EMP-1024" /></div>
+        <div><label for="employeeEmail">Email</label><input id="employeeEmail" type="email" placeholder="jane@example.com" /></div>
+        <div><label for="hourlyRate">Hourly Rate (for invoice)</label><input id="hourlyRate" type="number" min="0" step="0.01" placeholder="45" /></div>
+      </div>
+      <label class="checkbox-row" for="isSelfEmployed"><input id="isSelfEmployed" type="checkbox" />I am self-employed and need invoices</label>
+      <div class="button-row"><button id="saveProfileBtn" type="button" class="button-secondary">Save Employee Details</button></div>
+    </section>
+
+    <section class="card">
+      <h2>Timesheet Entry</h2>
+      <div class="grid">
+        <div>
+          <label for="weekInput">Timesheet Week</label>
+          <input id="weekInput" type="week" />
+          <div class="muted">One timesheet per employee per week is allowed (local + cloud).</div>
+        </div>
+      </div>
+      <table aria-label="Weekly hours table">
+        <thead><tr><th>Day</th><th style="width: 130px;">Hours</th><th>Notes</th></tr></thead>
+        <tbody id="timesheetBody"></tbody>
+        <tfoot><tr><th>Total Hours</th><th id="totalHoursCell" class="right">0.00</th><th></th></tr></tfoot>
+      </table>
+      <div><label for="weekSummary">Week Summary</label><textarea id="weekSummary" placeholder="What was achieved this week?"></textarea></div>
+      <div class="button-row">
+        <button id="saveTimesheetBtn" type="button">Save Timesheet</button>
+        <button id="generateInvoiceBtn" type="button" class="button-success">Generate Invoice</button>
+        <button id="printInvoiceBtn" type="button" class="button-secondary">Print Invoice</button>
+      </div>
+      <div id="statusMessage" class="status"></div>
+    </section>
+
+    <section class="card"><h2>Saved Timesheets (Current Employee)</h2><ul id="savedTimesheets"></ul></section>
+    <section class="card" id="invoicePreview"><h2>Invoice Preview</h2><div id="invoiceContent"></div></section>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      profile: "timesheet.employeeProfile",
+      records: "timesheet.records",
+      cloudConfig: "timesheet.cloudConfig"
+    };
+
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    const el = {
+      workerUrl: document.getElementById("workerUrl"),
+      workerApiKey: document.getElementById("workerApiKey"),
+      saveCloudConfigBtn: document.getElementById("saveCloudConfigBtn"),
+      pushCloudBtn: document.getElementById("pushCloudBtn"),
+      pullCloudBtn: document.getElementById("pullCloudBtn"),
+      employeeName: document.getElementById("employeeName"),
+      employeeId: document.getElementById("employeeId"),
+      employeeEmail: document.getElementById("employeeEmail"),
+      hourlyRate: document.getElementById("hourlyRate"),
+      isSelfEmployed: document.getElementById("isSelfEmployed"),
+      saveProfileBtn: document.getElementById("saveProfileBtn"),
+      weekInput: document.getElementById("weekInput"),
+      timesheetBody: document.getElementById("timesheetBody"),
+      weekSummary: document.getElementById("weekSummary"),
+      saveTimesheetBtn: document.getElementById("saveTimesheetBtn"),
+      generateInvoiceBtn: document.getElementById("generateInvoiceBtn"),
+      printInvoiceBtn: document.getElementById("printInvoiceBtn"),
+      totalHoursCell: document.getElementById("totalHoursCell"),
+      statusMessage: document.getElementById("statusMessage"),
+      invoicePreview: document.getElementById("invoicePreview"),
+      invoiceContent: document.getElementById("invoiceContent"),
+      savedTimesheets: document.getElementById("savedTimesheets")
+    };
+
+    function status(message, type = "success") {
+      el.statusMessage.textContent = message;
+      el.statusMessage.className = `status ${type}`;
+    }
+
+    function getStoredRecords() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.records) || "[]");
+    }
+
+    function setStoredRecords(records) {
+      localStorage.setItem(STORAGE_KEYS.records, JSON.stringify(records));
+    }
+
+    function getCloudConfig() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.cloudConfig) || "{}");
+    }
+
+    function buildEmployeeWeekKey(employeeId, week) {
+      return `${employeeId.trim().toLowerCase()}::${week}`;
+    }
+
+    function loadCloudConfig() {
+      const config = getCloudConfig();
+      el.workerUrl.value = config.workerUrl || "";
+      el.workerApiKey.value = config.workerApiKey || "";
+    }
+
+    function saveCloudConfig() {
+      const config = {
+        workerUrl: el.workerUrl.value.trim().replace(/\/+$/, ""),
+        workerApiKey: el.workerApiKey.value.trim()
+      };
+      if (!config.workerUrl) {
+        status("Worker Base URL is required to save cloud sync settings.", "error");
+        return;
+      }
+      localStorage.setItem(STORAGE_KEYS.cloudConfig, JSON.stringify(config));
+      status("Cloud sync settings saved.");
+    }
+
+    function buildHeaders() {
+      const { workerApiKey } = getCloudConfig();
+      const headers = { "Content-Type": "application/json" };
+      if (workerApiKey) {
+        headers["x-api-key"] = workerApiKey;
+      }
+      return headers;
+    }
+
+    async function workerFetch(path, options = {}) {
+      const { workerUrl } = getCloudConfig();
+      if (!workerUrl) {
+        throw new Error("Cloud Worker URL is not configured.");
+      }
+      const response = await fetch(`${workerUrl}${path}`, {
+        ...options,
+        headers: {
+          ...buildHeaders(),
+          ...(options.headers || {})
+        }
+      });
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Cloud request failed (${response.status}): ${body || response.statusText}`);
+      }
+      const contentType = response.headers.get("content-type") || "";
+      return contentType.includes("application/json") ? response.json() : response.text();
+    }
+
+    function renderRows() {
+      el.timesheetBody.innerHTML = "";
+      days.forEach((day) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${day}</td><td><input type="number" min="0" step="0.25" value="0" data-role="hours" aria-label="${day} hours" /></td><td><input type="text" data-role="note" placeholder="Task/project" aria-label="${day} note" /></td>`;
+        el.timesheetBody.appendChild(row);
+      });
+      recalculateTotal();
+    }
+
+    function recalculateTotal() {
+      const total = [...el.timesheetBody.querySelectorAll('input[data-role="hours"]')]
+        .reduce((sum, input) => sum + (Number(input.value) || 0), 0);
+      el.totalHoursCell.textContent = total.toFixed(2);
+      return total;
+    }
+
+    function saveProfile() {
+      const profile = {
+        employeeName: el.employeeName.value.trim(),
+        employeeId: el.employeeId.value.trim(),
+        employeeEmail: el.employeeEmail.value.trim(),
+        hourlyRate: Number(el.hourlyRate.value) || 0,
+        isSelfEmployed: el.isSelfEmployed.checked
+      };
+      if (!profile.employeeName || !profile.employeeId || !profile.employeeEmail) {
+        status("Please complete name, employee ID, and email before saving details.", "error");
+        return;
+      }
+      localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify(profile));
+      status("Employee details saved locally.");
+      refreshSavedTimesheets();
+    }
+
+    function loadProfile() {
+      const profile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || "null");
+      if (!profile) return;
+      el.employeeName.value = profile.employeeName || "";
+      el.employeeId.value = profile.employeeId || "";
+      el.employeeEmail.value = profile.employeeEmail || "";
+      el.hourlyRate.value = profile.hourlyRate || "";
+      el.isSelfEmployed.checked = !!profile.isSelfEmployed;
+    }
+
+    function collectTimesheetDetails() {
+      return [...el.timesheetBody.querySelectorAll("tr")].map((row, index) => ({
+        day: days[index],
+        hours: Number(row.querySelector('input[data-role="hours"]').value) || 0,
+        note: row.querySelector('input[data-role="note"]').value.trim()
+      }));
+    }
+
+    function saveTimesheet() {
+      const employeeId = el.employeeId.value.trim();
+      const week = el.weekInput.value;
+      if (!employeeId) return status("Employee ID is required before saving a timesheet.", "error");
+      if (!week) return status("Please choose a week for this timesheet.", "error");
+
+      const key = buildEmployeeWeekKey(employeeId, week);
+      const records = getStoredRecords();
+      if (records.some((record) => record.employeeWeekKey === key)) {
+        return status("A timesheet for this employee and week already exists. Duplicate blocked.", "error");
+      }
+
+      const details = collectTimesheetDetails();
+      const totalHours = details.reduce((sum, item) => sum + item.hours, 0);
+      records.push({
+        employeeWeekKey: key,
+        employeeId,
+        employeeName: el.employeeName.value.trim(),
+        employeeEmail: el.employeeEmail.value.trim(),
+        week,
+        summary: el.weekSummary.value.trim(),
+        details,
+        totalHours,
+        hourlyRate: Number(el.hourlyRate.value) || 0,
+        isSelfEmployed: el.isSelfEmployed.checked,
+        createdAt: new Date().toISOString()
+      });
+      setStoredRecords(records);
+      status("Timesheet saved locally.");
+      refreshSavedTimesheets();
+    }
+
+    function refreshSavedTimesheets() {
+      const employeeId = el.employeeId.value.trim();
+      const records = getStoredRecords().filter((record) => record.employeeId === employeeId);
+      el.savedTimesheets.innerHTML = "";
+      if (!employeeId) return void (el.savedTimesheets.innerHTML = "<li class='muted'>Enter an employee ID to view linked weeks.</li>");
+      if (records.length === 0) return void (el.savedTimesheets.innerHTML = "<li class='muted'>No timesheets saved for this employee yet.</li>");
+      records.sort((a, b) => a.week.localeCompare(b.week)).forEach((record) => {
+        const li = document.createElement("li");
+        li.textContent = `Week ${record.week} — ${record.totalHours.toFixed(2)} hours`;
+        el.savedTimesheets.appendChild(li);
+      });
+    }
+
+    function getTimesheetForInvoice() {
+      const key = buildEmployeeWeekKey(el.employeeId.value.trim(), el.weekInput.value);
+      return getStoredRecords().find((item) => item.employeeWeekKey === key);
+    }
+
+    function generateInvoice() {
+      if (!el.isSelfEmployed.checked) return status("Invoice generation is available only for self-employed users.", "error");
+      const record = getTimesheetForInvoice();
+      if (!record) return status("Save the timesheet before generating an invoice.", "error");
+
+      const total = (record.totalHours || 0) * (record.hourlyRate || 0);
+      const lineItems = record.details
+        .filter((item) => item.hours > 0)
+        .map((item) => `<tr><td>${item.day}</td><td>${item.hours.toFixed(2)}</td><td>£${(item.hours * record.hourlyRate).toFixed(2)}</td></tr>`)
+        .join("") || "<tr><td colspan='3'>No billable entries.</td></tr>";
+
+      el.invoiceContent.innerHTML = `
+        <p><strong>Invoice To:</strong> ${record.employeeName || record.employeeId}</p>
+        <p><strong>Week:</strong> ${record.week}</p>
+        <p><strong>Email:</strong> ${record.employeeEmail || "N/A"}</p>
+        <p><strong>Hourly Rate:</strong> £${(record.hourlyRate || 0).toFixed(2)}</p>
+        <table>
+          <thead><tr><th>Day</th><th>Hours</th><th>Amount</th></tr></thead>
+          <tbody>${lineItems}</tbody>
+          <tfoot><tr><th>Total</th><th>${record.totalHours.toFixed(2)}</th><th>£${total.toFixed(2)}</th></tr></tfoot>
+        </table>
+        <p><strong>Summary:</strong> ${record.summary || "No summary provided."}</p>`;
+      el.invoicePreview.style.display = "block";
+      status("Invoice generated from saved timesheet.");
+    }
+
+    async function pushToCloud() {
+      const employeeId = el.employeeId.value.trim();
+      if (!employeeId) return status("Employee ID is required to push data to cloud.", "error");
+
+      try {
+        const profile = {
+          employeeName: el.employeeName.value.trim(),
+          employeeId,
+          employeeEmail: el.employeeEmail.value.trim(),
+          hourlyRate: Number(el.hourlyRate.value) || 0,
+          isSelfEmployed: el.isSelfEmployed.checked
+        };
+        await workerFetch(`/api/profile/${encodeURIComponent(employeeId)}`, {
+          method: "PUT",
+          body: JSON.stringify(profile)
+        });
+
+        const localRecords = getStoredRecords().filter((record) => record.employeeId === employeeId);
+        for (const record of localRecords) {
+          await workerFetch("/api/timesheets", {
+            method: "POST",
+            body: JSON.stringify(record)
+          });
+        }
+        status(`Cloud sync complete. Pushed ${localRecords.length} timesheet(s).`);
+      } catch (error) {
+        status(error.message, "error");
+      }
+    }
+
+    async function pullFromCloud() {
+      const employeeId = el.employeeId.value.trim();
+      if (!employeeId) return status("Employee ID is required to pull cloud data.", "error");
+      try {
+        const response = await workerFetch(`/api/timesheets?employeeId=${encodeURIComponent(employeeId)}`);
+        const cloudRecords = response.records || [];
+        const local = getStoredRecords();
+        const existingKeys = new Set(local.map((item) => item.employeeWeekKey));
+        cloudRecords.forEach((record) => {
+          if (!existingKeys.has(record.employeeWeekKey)) {
+            local.push(record);
+          }
+        });
+        setStoredRecords(local);
+        refreshSavedTimesheets();
+        status(`Pulled ${cloudRecords.length} cloud timesheet(s).`);
+      } catch (error) {
+        status(error.message, "error");
+      }
+    }
+
+    el.saveCloudConfigBtn.addEventListener("click", saveCloudConfig);
+    el.pushCloudBtn.addEventListener("click", pushToCloud);
+    el.pullCloudBtn.addEventListener("click", pullFromCloud);
+    el.saveProfileBtn.addEventListener("click", saveProfile);
+    el.saveTimesheetBtn.addEventListener("click", saveTimesheet);
+    el.generateInvoiceBtn.addEventListener("click", generateInvoice);
+    el.printInvoiceBtn.addEventListener("click", () => {
+      if (el.invoicePreview.style.display !== "block") return status("Generate an invoice first, then print.", "error");
+      window.print();
+    });
+
+    el.timesheetBody.addEventListener("input", (event) => {
+      if (event.target.matches('input[data-role="hours"]')) recalculateTotal();
+    });
+    el.employeeId.addEventListener("input", refreshSavedTimesheets);
+
+    loadCloudConfig();
+    loadProfile();
+    renderRows();
+    refreshSavedTimesheets();
+  </script>
+</body>
+</html>
